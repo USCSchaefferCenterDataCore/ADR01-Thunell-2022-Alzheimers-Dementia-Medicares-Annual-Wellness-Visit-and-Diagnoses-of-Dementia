@@ -1,0 +1,1 @@
+# ADR01-Thunell-2022-Alzheimers-Dementia-Medicares-Annual-Wellness-Visit-and-Diagnoses-of-Dementia
