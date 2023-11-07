@@ -1,0 +1,405 @@
+/* statmo macro
+   makes a file for each bene/month within a year that gives bene status/enrollment by month.
+   parameters:
+   - byr,eyr = range of years to process (4 digit)
+   - hmo_mo = name of the variable on den/bsf with # hmo months
+   - hmoind = name of the monthly hmo indicators (hmoind1-hmoind12)
+   - hmonm  = whether there is a leading zero for months < 10. If =0 yes, if null, no
+   - stbuy  = name of monthly state buyin flags (buyin or entitl)
+   - denbsf = prefix for the denom/bsf file
+   - denfile = name of the denom/bsf file if not [denbsf]yyyy
+   - denlib  = libname for location of denom/bsf file
+   - bdt, ddt = name of variables for birth and death date
+	 - demogyr = version of bene_demog[demogyr] to use. By default just bene_demog.
+	 
+   Updated Nov 2015, p. st.clair: keep enrA_allyr, enrB_allyr
+      and enr[A|B]FFS_allyr flags.
+   Updated Jan 2016 to comment out lengths for Part D problem flags which
+      aren't being used and caused uninitialized variable warnings. The
+      conflict variable is used instead. Also changed conflict check to
+      include enrhmo_4_allyr since the bsf/den # of HMO months includes these.
+*/
+%macro statmo(byr,eyr,hmo_mo=hmo_mo,hmoind=hmoind, hmonm=0,stbuy=buyin,
+            denbsf=den,denfile=,denlib=den,
+            bdt=bene_dob,ddt=death_dt,demogyr=);
+
+%do year=&byr %to &eyr;
+
+title2 bene_status_month&year ;
+
+%if %length(&denfile)>0 %then %let denomf=&denfile;
+%else %let denomf=&denbsf.&year;
+
+/* Part D related variables become available in 2006 */
+%if &year > 2005 %then %do;
+   %let ptDallyr=lis_allyr rdsind_allyr ptD_allyr stdptD_allyr egwp_allyr
+                dual_cstshr_allyr dual_full_allyr dual_restrict_allyr;
+   %let ptDany=anyrds anylis anyptD anystdptD anyegwp anydual_cstshr anydual_full anydual_restrict;
+   %let ptDvars=cstshr lisdual rdsind crdcovsw
+                ptDplanid ptDcontract ptDsegid ptDtype egwp 
+                dual_cstshr dual_stat dual_flag 
+                &ptDany &ptDallyr;
+   %let ptDfreq=dual_cstshr dual_stat dual_flag 
+                cstshr lisdual rdsind crdcovsw ptDtype 
+                &ptDany &ptDallyr
+                ;
+   %let ptDfreq2=dual_stat*dual_flag dual_cstshr*cstshr lisdual*cstshr
+                dual*dual_cstshr*dual_stat
+                rdsind*ptDtype egwp*ptDtype anyrds*anyptD*anyegwp*crdcovsw
+                ;
+   %let ptDfreq3=dual*dual_stat*dual_cstshr;
+   %let ptDfmt=rdsind $rdsind. dual_cstshr $dualcst. dual_stat $dualstat.
+               lisdual $lisdual. crdcovsw $crdcov. ptDtype $ptDtype. egwp $egwp.;
+   %let ptD_dropv=_plnid;
+%end;
+%else %do;
+   %let ptDany=;
+   %let ptDallyr=;
+   %let ptDvars=;
+   %let ptDfreq=;
+   %let ptDfreq2=;
+   %let ptDfreq3=;
+   %let ptDfmt=;
+   %let ptD_dropv=;
+%end;
+
+/* make a monthly file from denominator/bsf */
+data bene.bene_status_month&year (keep=bene_id year month birth_date death_date 
+                          sex race_bg dropflag samebdt sameddt
+                          age_inmo age_inmo65 died_inyr died_inmo enrAB 
+                          enrHMO dual anyhmo anyhmo_4 anydual
+                          enrHMO_allyr enrHMO_4_allyr enrAB_allyr 
+                          enrA_allyr enrB_allyr 
+                          enrFFS_allyr enrAFFS_allyr enrBFFS_allyr
+                          dual_allyr &ptDvars)
+     conflicts
+     ;
+
+   length year month age_inmo 3;
+   length age_inmo65 died_inyr_x died_inmo $ 1;
+   length enrAB_mo alive_mo stdual_mo 3;
+   length enrAB enrHMO $ 1;
+   length samebdt sameddt $ 1 ;
+%if %length(&ptDvars) > 0 %then %do;
+   length lisdual rdsind egwp $ 1;
+   length egwp_&hmonm.1-egwp_12 $ 1;
+   length ptDplanid ptDsegid $ 3;
+   length ptDcontract $ 5 ptDtype $ 1;
+   length dual_cstshr dual_stat $ 1;
+   length dual_flag $ 2;
+   length _plnid $ 12;
+   label lisdual="Whether LIS/dual from cstshr (-/*/U/X=missing)"
+         dual_cstshr="Whether dual elig from cost share flag-*/U/X=missing (from cstshr)"
+         dual_stat="Whether full/restricted dual from dual flag-*/U/X=missing (from dual)"
+         dual_flag="Dual eligibility status code (dual)"
+         cstshr="Part D cost share flag"
+         rdsind="Retiree drug subsidy flag (*/U=missing)"
+         ptDcontract="Part D contract ID"
+         ptDplanid="Part D plan ID"
+         ptDsegid="Part D segment ID"
+         ptDtype="Type Part D plan (1st char contract, -/*/U/X=missing)"
+         egwp="Employee Group Waiver Plan-PtD-Y/N,M=missing (from plan char)"
+         crdcovsw="Part D Creditable Coverage-0/1 (1+ month, */U=missing)"
+         ;
+%end;
+   
+   length dual $ 1;
+   
+   merge &denlib..&denomf (in=_inyr where=(bene_id ne " " ))
+         bene.bene_status_year&year (in=_inystat 
+                                     keep=bene_id anyhmo anyhmo_4 anydual died_inyr 
+                                           enrAB_allyr enrA_allyr enrB_allyr 
+                                           enrHMO_allyr enrHMO_4_allyr 
+                                           enrFFS_allyr enrAFFS_allyr enrBFFS_allyr dual_allyr
+                                           &ptDany &ptDallyr)
+         bene.bene_demog&demogyr (in=_indem keep=bene_id birth_date death_date sex race_bg dropflag
+                             where=(dropflag ne "Y"))
+    ;
+   by bene_id;
+
+   dupflag=(first.bene_id=0 or last.bene_id=0);
+   if _inyr=1 and _indem=1;
+   _instatyr=_inystat;
+   
+   if dupflag=1 then do;
+      put "*** Dropping duplicate bene_id: " bene_id= dupflag= ;
+      delete;
+   end;
+   drop dupflag ;
+   
+   /* in some years the year variable is missing from the den/bsf file */
+   if missing(year) then year=&year;
+   
+   /* flag benes who die this year.  Use death month to assign 
+      months alive */
+   died_inyr_x="N";
+   if (&year = year(death_date)) and died_inyr ne "Y" then died_inyr_x="y";
+   else if (&year ne year(death_date)) and died_inyr ne "N" then died_inyr_x="n";
+   
+   if .<year(death_date)<&year then died_inyr_x="p";
+   else if year(death_date)>&year then do;
+      death_date=.F; /* future */
+      died_inyr_x="f";
+   end;
+   
+   if died_inyr="Y" then alive_mo=month(death_date);
+   else alive_mo=12;
+  
+   /* compare year death date to cleaned version */
+   if died_inyr="Y" then do;
+      if &ddt = death_date then sameddt="S";
+      else if year(&ddt)=year(death_date) then sameddt="Y";
+      else sameddt="N";
+   end;
+   drop &ddt;
+   
+   /* compare year birth date to cleaned one */
+   if &bdt = birth_date then samebdt="S";
+   else if year(&bdt)=year(birth_date) then samebdt="Y";
+   else samebdt="N";
+   drop &bdt;
+   
+   format birth_date death_date date10.;
+   
+   /* convert hmo months to numeric */
+   length enrHMO_mo 3 ;
+   enrHMO_mo=&hmo_mo;
+   if (enrHMO_mo>0) and anyhmo ne "Y" and anyhmo_4 ne "Y" then conflict=1;
+   else if (enrHMO_mo=0) and anyhmo ne "N" then conflict=1;
+   
+   /* make some enrollment flags: whether enrolled in Part A, B or both
+      and whether enrolled in an HMO */
+   length firstenr lastenr 3;
+   array enr_[*] &stbuy&hmonm.1-&stbuy.12;
+   array hmo_[*] &hmoind&hmonm.1-&hmoind.12;
+
+%if %length(&ptDvars)> 0 %then %do;
+   /* set up Part D relevant variable arrays */
+   array rdsind_[*] rdsind&hmonm.1-rdsind12;
+   array cstshr_[*] cstshr&hmonm.1-cstshr12;
+   array pbpid_[*] pbpid&hmonm.1-pbpid12;
+   array cntrct_[*] cntrct&hmonm.1-cntrct12;
+   array sgmtid_[*] sgmtid&hmonm.1-sgmtid12;
+   array dual_[*] dual_&hmonm.1-dual_12;
+   array egwp_[*] egwp_&hmonm.1-egwp_12;
+%end;
+
+   firstenr=0;
+   lastenr=0;
+   enrAB_mo=0;
+   stdual_mo=0;
+
+   do mo=1 to 12;
+      if firstenr=0 and enr_[mo] ne "0" then firstenr=mo;
+      if enr_[mo] ne "0" then lastenr=mo;
+      if enr_[mo] in ("3","C") then enrAB_mo=enrAB_mo+1;
+      if enr_[mo] in ("A","B","C") then stdual_mo=stdual_mo+1;
+      
+%if %length(&ptDvars)> 0 %then %do;
+      if mo<=alive_mo then do;
+         if cstshr_[mo] in ("04","05","06","07","08") and anylis ne "Y" then conflict=11;
+         else if cstshr_[mo] in ("01","02","03") and anydual_cstshr ne "Y" then conflict=12;
+         if rdsind_[mo]="Y" and anyrds ne "Y" then conflict=13;
+         if substr(cntrct_[mo],1,1) in ("H","E","R","S") and anyptD ne "Y" then conflict=14;
+         if substr(cntrct_[mo],1,1)="S" and anystdptD ne "Y" then conflict=15;
+         
+         _plnid=compress(put(year,4.0) || cntrct_[mo] || pbpid_[mo]);
+         egwp_[mo]=put(_plnid,$p2egwp.);
+         if egwp_[mo]="Y" and anyegwp ne "Y" then conflict=16;
+         
+         if dual_[mo] in ("02","04","08") and anydual_full ne "Y" then conflict=17;
+         else if dual_[mo] in ("01","03","05","06") and anydual_restrict ne "Y" then conflict=18;
+      end;
+%end;
+
+   end;
+   
+   if (enrAB_mo=(lastenr-firstenr+1)) and enrAB_allyr ne "Y" then conflict=1;
+   if (enrHMO_mo=(lastenr-firstenr+1)) and enrHMO_allyr ne "Y" and enrHMO_4_allyr ne "Y" then conflict=2;
+   if (enrHMO_mo=0 and enrAB_allyr="Y") and enrFFS_allyr ne "Y" then conflict=3;
+   if (stdual_mo=(lastenr-firstenr+1)) and dual_allyr ne "Y" then conflict=4;
+
+   /* check for conflicts with the year status file flags */
+   if conflict>0 then output conflicts;
+                          
+   do mo=1 to 12;
+      if enr_[mo] in ("1","A") then enrAB="A";
+      else if enr_[mo] in ("2","B") then enrAB="B";
+      else if enr_[mo] in ("3","C") then enrAB="Y";
+      else if enr_[mo] in ("0"," ") then enrAB="N";
+
+      if hmo_[mo]="4" then enrHMO="4";
+      else if hmo_[mo] not in ("0"," ") then enrHMO="Y";
+      else if hmo_[mo] in ("0"," ") then enrHMO="N";
+      
+      month=mo;
+      age_inmo=int(intck( "MONTH", birth_date, mdy(mo,15,&year) ) / 12);
+      if age_inmo >=65 then age_inmo65="Y";
+      else age_inmo65="N";
+      
+      if died_inyr="Y" then do;
+         if month(death_date)=mo then died_inmo="Y";
+         else if month(death_date)>mo then died_inmo="N";
+         else died_inmo="D";  /* died this year, prior month */
+      end;
+      else if died_inyr="N" then died_inmo="N";
+      else if died_inyr="P" then died_inmo="P";  /* died previous year */
+      
+      /* assign dual status derived from buyin flags */
+      if enr_[mo] in ("1","2","3") then dual="N";
+      else if enr_[mo] in ("A","B","C") then dual="Y";
+      else if enr_[mo]="0" then dual="X";  /* not enrolled */
+      else dual="U"; /* status missing */
+
+%if %length(&ptDvars)> 0 %then %do;
+      /* set Part D relevant variables */
+      dual_flag=dual_[mo];
+      cstshr=cstshr_[mo];
+      ptDcontract=cntrct_[mo];
+      ptDplanid=pbpid_[mo];
+      ptDsegid =sgmtid_[mo];
+      
+      ptDtype=substr(ptDcontract,1,1);
+      if ptDtype in ("*","X") then ptDtype="*";
+      else if ptDtype="N" then ptDtype="-";
+      else if ptDtype="0" then ptDtype="X";
+      else if ptDtype=" " then ptDtype="U";
+      
+      rdsind=rdsind_[mo];
+      if rdsind in ("*","X") then rdsind="*";
+      else if rdsind="0" then rdsind="X";
+      else if rdsind=" " then rdsind="U";
+
+      egwp=egwp_[mo];
+      if egwp="M" and ptDtype in ("*","-","X","U") then egwp=ptDtype;
+      
+      /* set some variants of dual eligible status
+         based on cstshr and dual_flag */ 
+     if dual_flag in ("02","04","08") then dual_stat="F"; /* full dual_stat=Medicaid */
+     else if dual_flag in ("01","03","05","06") then dual_stat="R"; /* restricted Medicaid */
+     else if dual_flag="00" then dual_stat="X"; /* not enrolled in Medicare */
+     else if dual_flag="09" then dual_stat="O"; /* other dual, not medicaid */
+     else if dual_flag in ("**","XX") then dual_stat="*";  /* no Part D enrollment info */
+     else if dual_flag in ("99", " ") then dual_stat="U"; /* Unknown */
+     else dual_stat="N";  /* not dual */
+     
+     if cstshr in ("01","02","03") then dual_cstshr="Y";
+     else if cstshr in ("**","XX") then dual_cstshr="*";  /* no Part D enrollment info */
+     else if cstshr="00" then dual_cstshr="X"; /* not enrolled Medicare */
+     else if cstshr=" " then dual_cstshr="U"; /* missing cstshr */
+     else dual_cstshr="N";  /* not dual */
+     
+     /* summarize LIS-Dual status from cstshr. */
+     if cstshr in ("01","02","03") then lisdual="D"; /* dual */
+     else if cstshr in ("04","05","06","07","08") then lisdual="L"; /* LIS */ 
+     else if cstshr="09" then lisdual="N"; /* not LIS */
+     else if cstshr in ("10","11","12","13") then lisdual="-"; /* not enrolled in Part D */
+     else if cstshr in ("**","XX") then lisdual="*";  /* no Part D enrollment info */
+     else if cstshr="00" then lisdual="X"; /* not enrolled Medicare */
+     else if cstshr=" " then lisdual="U"; /* missing cstshr */
+%end;
+
+      output bene.bene_status_month&year;  /* bene year month obs */
+   end;
+   drop mo &stbuy.: /* firstenr lastenr */ &ptD_dropv;
+   
+   month=0;
+   
+   label
+   month="Month"
+   alive_mo="# months alive during year"
+   samebdt="Whether year birth date = cleaned version (S=same day/Y=same yr/N=no)"
+   sameddt="Whether year death date = cleaned version (S=same day/Y=same yr/N=no)"
+   enrAB_mo = "# months enrolled in both Parts A and B"
+   enrHMO_mo = "# months enrolled in an HMO"
+   stdual_mo = "# months dual eligible in year (buyin) "
+
+   died_inmo="Whether died in this month (Y/N/D/P)"
+   age_inmo="Age in years during obs month"
+   age_inmo65="Whether 65+ in this month (Y/N)"
+   enrAB = "Whether enrolled in AB this month (Y/N)"
+   enrHMO = "Whether in HMO this month (Y/N)"
+   dual="Whether dual from state buyin flag (U/X=missing)"
+   ;
+   
+run;
+%let ptDallyr=;
+%let ptDany=;
+%let ptDmo=;
+%if %length(&ptDvars)> 0 %then %do;
+    %let ptDallyr=lis_allyr rdsind_allyr ptD_allyr stdptD_allyr egwp_allyr
+                 dual_cstshr_allyr dual_full_allyr dual_restrict_allyr;
+    %let ptDany=anyrds anylis anyptD anystdptD anyegwp anydual_cstshr anydual_full anydual_restrict;
+    %let ptDmo=lis_mo_yr rdsind_mo_yr ptD_mo_yr stdptD_mo_yr egwp_mo_yr 
+               dual_cstshr_mo_yr dual_full_mo_yr dual_restrict_mo_yr;
+%end;
+proc freq data=conflicts;
+   table conflict _instatyr conflict*_instatyr conflict*died_inyr*_instatyr
+         conflict*enrHMO_mo*enrAB_allyr*enrFFS_allyr*enrHMO_allyr
+         conflict*dual_allyr*stdual_mo*firstenr*lastenr
+         enrHMO_allyr*enrHMO_4_allyr*anyhmo*anyhmo_4*&hmo_mo
+     /missing list;
+proc sql;
+   create table conflicty as select a.*,b.*
+       from conflicts a left join
+            bene.bene_status_year&year 
+                (keep=bene_id &ptDmo) b
+       on a.bene_id=b.bene_id
+       order a.bene_id;
+       
+proc print data=conflicts (obs=10);
+title3 conflicts;
+   by bene_id;
+   id conflict;
+run;
+proc print data=conflicty (obs=10);
+title3 conflicts - year status;
+   id bene_id conflict;
+   var &ptDallyr &ptDany
+       &ptDmo
+       ;
+run;
+
+title3;
+proc freq data=bene.bene_status_month&year;
+   table year month dropflag samebdt sameddt dropflag*samebdt*sameddt
+         enrAB_allyr enrA_allyr enrB_allyr 
+         enrHMO_allyr enrHMO_4_allyr 
+         enrFFS_allyr enrAFFS_allyr enrBFFS_allyr 
+         dual_allyr 
+         anyhmo anyhmo_4 anydual
+         enrAB enrHMO enrAB*enrHMO dual enrAB*dual
+         age_inmo65 died_inyr died_inmo 
+         enrAB_allyr*enrHMO_allyr*enrHMO_4_allyr*enrFFS_allyr*anyhmo*anyhmo_4
+         enrA_allyr*enrB_allyr*enrHMO_4_allyr*enrAFFS_allyr*enrBFFS_allyr*anyhmo_4
+         died_inmo*enrAB*enrHMO 
+         &ptDfreq &ptDfreq2 &ptDfreq3
+      /missing list;
+   run;
+proc print data=bene.bene_status_month&year (obs=5);
+   var year month age_inmo65 age_inmo birth_date;
+   run;
+   
+%sascontents(bene_status_month&year,lib=bene,domeans=N,
+             contdir=&contentsdir)
+
+proc printto print="&contentsdir.bene_status_month&year..contents.txt" ;
+proc freq data=bene.bene_status_month&year;
+   table year month dropflag*samebdt*sameddt
+         enrAB_allyr enrA_allyr enrB_allyr 
+         enrHMO_allyr enrHMO_4_allyr anyhmo anyhmo_4
+         enrFFS_allyr enrAFFS_allyr enrBFFS_allyr 
+         enrAB enrHMO enrAB*enrHMO 
+         age_inmo65 died_inyr died_inmo 
+         dual anydual dual_allyr 
+         &ptDfreq &ptDfreq3
+      /missing list;
+   format enrAB $enrAB. enrHMO $enrHMO. died_inmo $diedmo. dual $dual. &ptDfmt ;
+   format samebdt sameddt $samedt.;
+   run;
+proc printto;
+run;
+
+%end;
+
+%mend statmo;

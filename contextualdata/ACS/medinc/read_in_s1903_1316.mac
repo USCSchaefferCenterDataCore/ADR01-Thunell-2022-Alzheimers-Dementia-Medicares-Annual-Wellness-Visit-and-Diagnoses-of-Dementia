@@ -1,0 +1,530 @@
+/*********************************************************************************************/
+TITLE1 "ACS SES - Education";
+
+* AUTHOR: Patricia Ferido;
+
+* DATE: 8/6/2019;
+
+* PURPOSE: Macro to read in ACS 5 year Summary Table S1903
+
+	Input variables:
+		yr - last year represented in the 5 year Summary Table;
+	
+* INPUT: acs_[yr]_5yr_S1903_with_ann.xlsx;
+
+* OUTPUT: acs_s1903_[yrs]_raw, acs_s1903_;
+
+options compress=yes nocenter ls=150 ps=200 errors=5  errorcheck=strict mprint merror
+	mergenoby=warn varlenchk=error dkricond=error dkrocond=error msglevel=i;
+/*********************************************************************************************/
+
+%macro s1903_1316(yr);
+data og&yr..acs_s1903_&yr._raw;
+	infile "&&raw&yr./ACS_&yr._5YR_S1903_with_ann.csv" delimiter = ',' MISSOVER DSD lrecl=32767 firstobs=3 ;
+	informat GEO_id $14. ;
+               informat GEO_id2 $5. ;
+               informat GEO_display_label $11. ;
+               informat HC01_EST_VC02 $27. ;
+               informat HC01_MOE_VC02 $34. ;
+               informat HC02_EST_VC02 $45. ;
+               informat HC02_MOE_VC02 $52. ;
+               informat HC01_EST_VC04 $48. ;
+               informat HC01_MOE_VC04 $55. ;
+               informat HC02_EST_VC04 $66. ;
+               informat HC02_MOE_VC04 $73. ;
+               informat HC01_EST_VC05 $68. ;
+               informat HC01_MOE_VC05 $75. ;
+               informat HC02_EST_VC05 $86. ;
+               informat HC02_MOE_VC05 $93. ;
+               informat HC01_EST_VC06 $76. ;
+               informat HC01_MOE_VC06 $83. ;
+               informat HC02_EST_VC06 $94. ;
+               informat HC02_MOE_VC06 $101. ;
+               informat HC01_EST_VC07 $48. ;
+               informat HC01_MOE_VC07 $55. ;
+               informat HC02_EST_VC07 $66. ;
+               informat HC02_MOE_VC07 $73. ;
+               informat HC01_EST_VC08 $85. ;
+               informat HC01_MOE_VC08 $92. ;
+               informat HC02_EST_VC08 $103. ;
+               informat HC02_MOE_VC08 $110. ;
+               informat HC01_EST_VC09 $58. ;
+               informat HC01_MOE_VC09 $65. ;
+               informat HC02_EST_VC09 $76. ;
+               informat HC02_MOE_VC09 $83. ;
+               informat HC01_EST_VC10 $47. ;
+               informat HC01_MOE_VC10 $54. ;
+               informat HC02_EST_VC10 $65. ;
+               informat HC02_MOE_VC10 $72. ;
+               informat HC01_EST_VC12 $56. ;
+               informat HC01_MOE_VC12 $63. ;
+               informat HC02_EST_VC12 $74. ;
+               informat HC02_MOE_VC12 $81. ;
+               informat HC01_EST_VC13 $54. ;
+               informat HC01_MOE_VC13 $61. ;
+               informat HC02_EST_VC13 $72. ;
+               informat HC02_MOE_VC13 $79. ;
+               informat HC01_EST_VC16 $72. ;
+               informat HC01_MOE_VC16 $79. ;
+               informat HC02_EST_VC16 $90. ;
+               informat HC02_MOE_VC16 $97. ;
+               informat HC01_EST_VC17 $72. ;
+               informat HC01_MOE_VC17 $79. ;
+               informat HC02_EST_VC17 $90. ;
+               informat HC02_MOE_VC17 $97. ;
+               informat HC01_EST_VC18 $72. ;
+               informat HC01_MOE_VC18 $79. ;
+               informat HC02_EST_VC18 $90. ;
+               informat HC02_MOE_VC18 $97. ;
+               informat HC01_EST_VC19 $75. ;
+               informat HC01_MOE_VC19 $82. ;
+               informat HC02_EST_VC19 $93. ;
+               informat HC02_MOE_VC19 $100. ;
+               informat HC01_EST_VC22 $36. ;
+               informat HC01_MOE_VC22 $43. ;
+               informat HC02_EST_VC22 $54. ;
+               informat HC02_MOE_VC22 $61. ;
+               informat HC01_EST_VC23 $71. ;
+               informat HC01_MOE_VC23 $78. ;
+               informat HC02_EST_VC23 $89. ;
+               informat HC02_MOE_VC23 $96. ;
+               informat HC01_EST_VC24 $74. ;
+               informat HC01_MOE_VC24 $81. ;
+               informat HC02_EST_VC24 $92. ;
+               informat HC02_MOE_VC24 $99. ;
+               informat HC01_EST_VC25 $62. ;
+               informat HC01_MOE_VC25 $69. ;
+               informat HC02_EST_VC25 $80. ;
+               informat HC02_MOE_VC25 $87. ;
+               informat HC01_EST_VC26 $79. ;
+               informat HC01_MOE_VC26 $86. ;
+               informat HC02_EST_VC26 $97. ;
+               informat HC02_MOE_VC26 $104. ;
+               informat HC01_EST_VC27 $74. ;
+               informat HC01_MOE_VC27 $81. ;
+               informat HC02_EST_VC27 $92. ;
+               informat HC02_MOE_VC27 $99. ;
+               informat HC01_EST_VC30 $60. ;
+               informat HC01_MOE_VC30 $67. ;
+               informat HC02_EST_VC30 $78. ;
+               informat HC02_MOE_VC30 $85. ;
+               informat HC01_EST_VC31 $81. ;
+               informat HC01_MOE_VC31 $88. ;
+               informat HC02_EST_VC31 $99. ;
+               informat HC02_MOE_VC31 $106. ;
+               informat HC01_EST_VC32 $96. ;
+               informat HC01_MOE_VC32 $103. ;
+               informat HC02_EST_VC32 $114. ;
+							 informat HC02_MOE_VC32 $121. ;
+               informat HC01_EST_VC33 $100. ;
+               informat HC01_MOE_VC33 $107. ;
+               informat HC02_EST_VC33 $118. ;
+               informat HC02_MOE_VC33 $125. ;
+               informat HC01_EST_VC34 $79. ;
+               informat HC01_MOE_VC34 $86. ;
+               informat HC02_EST_VC34 $97. ;
+               informat HC02_MOE_VC34 $104. ;
+               informat HC01_EST_VC35 $94. ;
+               informat HC01_MOE_VC35 $101. ;
+               informat HC02_EST_VC35 $112. ;
+               informat HC02_MOE_VC35 $119. ;
+               informat HC01_EST_VC36 $98. ;
+               informat HC01_MOE_VC36 $105. ;
+               informat HC02_EST_VC36 $116. ;
+               informat HC02_MOE_VC36 $123. ;
+               informat HC01_EST_VC39 $73. ;
+               informat HC01_MOE_VC39 $80. ;
+               informat HC02_EST_VC39 $91. ;
+               informat HC02_MOE_VC39 $98. ;
+               informat HC01_EST_VC40 $70. ;
+               informat HC01_MOE_VC40 $77. ;
+               informat HC02_EST_VC40 $88. ;
+               informat HC02_MOE_VC40 $95. ;
+               informat HC01_EST_VC41 $73. ;
+               informat HC01_MOE_VC41 $80. ;
+               informat HC02_EST_VC41 $91. ;
+               informat HC02_MOE_VC41 $98. ;
+               format GEO_id $14. ;
+               format GEO_id2 $5. ;
+               format GEO_display_label $11. ;
+               format HC01_EST_VC02 $27. ;
+               format HC01_MOE_VC02 $34. ;
+               format HC02_EST_VC02 $45. ;
+               format HC02_MOE_VC02 $52. ;
+               format HC01_EST_VC04 $48. ;
+               format HC01_MOE_VC04 $55. ;
+               format HC02_EST_VC04 $66. ;
+               format HC02_MOE_VC04 $73. ;
+               format HC01_EST_VC05 $68. ;
+               format HC01_MOE_VC05 $75. ;
+               format HC02_EST_VC05 $86. ;
+               format HC02_MOE_VC05 $93. ;
+               format HC01_EST_VC06 $76. ;
+               format HC01_MOE_VC06 $83. ;
+               format HC02_EST_VC06 $94. ;
+               format HC02_MOE_VC06 $101. ;
+               format HC01_EST_VC07 $48. ;
+               format HC01_MOE_VC07 $55. ;
+               format HC02_EST_VC07 $66. ;
+               format HC02_MOE_VC07 $73. ;
+               format HC01_EST_VC08 $85. ;
+               format HC01_MOE_VC08 $92. ;
+               format HC02_EST_VC08 $103. ;
+               format HC02_MOE_VC08 $110. ;
+               format HC01_EST_VC09 $58. ;
+               format HC01_MOE_VC09 $65. ;
+               format HC02_EST_VC09 $76. ;
+               format HC02_MOE_VC09 $83. ;
+               format HC01_EST_VC10 $47. ;
+               format HC01_MOE_VC10 $54. ;
+               format HC02_EST_VC10 $65. ;
+               format HC02_MOE_VC10 $72. ;
+               format HC01_EST_VC12 $56. ;
+               format HC01_MOE_VC12 $63. ;
+               format HC02_EST_VC12 $74. ;
+               format HC02_MOE_VC12 $81. ;
+               format HC01_EST_VC13 $54. ;
+               format HC01_MOE_VC13 $61. ;
+               format HC02_EST_VC13 $72. ;
+               format HC02_MOE_VC13 $79. ;
+               format HC01_EST_VC16 $72. ;
+               format HC01_MOE_VC16 $79. ;
+               format HC02_EST_VC16 $90. ;
+               format HC02_MOE_VC16 $97. ;
+               format HC01_EST_VC17 $72. ;
+               format HC01_MOE_VC17 $79. ;
+               format HC02_EST_VC17 $90. ;
+               format HC02_MOE_VC17 $97. ;
+               format HC01_EST_VC18 $72. ;
+               format HC01_MOE_VC18 $79. ;
+               format HC02_EST_VC18 $90. ;
+               format HC02_MOE_VC18 $97. ;
+               format HC01_EST_VC19 $75. ;
+               format HC01_MOE_VC19 $82. ;
+               format HC02_EST_VC19 $93. ;
+               format HC02_MOE_VC19 $100. ;
+               format HC01_EST_VC22 $36. ;
+               format HC01_MOE_VC22 $43. ;
+               format HC02_EST_VC22 $54. ;
+               format HC02_MOE_VC22 $61. ;
+               format HC01_EST_VC23 $71. ;
+               format HC01_MOE_VC23 $78. ;
+               format HC02_EST_VC23 $89. ;
+               format HC02_MOE_VC23 $96. ;
+               format HC01_EST_VC24 $74. ;
+               format HC01_MOE_VC24 $81. ;
+               format HC02_EST_VC24 $92. ;
+               format HC02_MOE_VC24 $99. ;
+               format HC01_EST_VC25 $62. ;
+               format HC01_MOE_VC25 $69. ;
+               format HC02_EST_VC25 $80. ;
+               format HC02_MOE_VC25 $87. ;
+               format HC01_EST_VC26 $79. ;
+               format HC01_MOE_VC26 $86. ;
+               format HC02_EST_VC26 $97. ;
+               format HC02_MOE_VC26 $104. ;
+               format HC01_EST_VC27 $74. ;
+               format HC01_MOE_VC27 $81. ;
+               format HC02_EST_VC27 $92. ;
+               format HC02_MOE_VC27 $99. ;
+               format HC01_EST_VC30 $60. ;
+               format HC01_MOE_VC30 $67. ;
+               format HC02_EST_VC30 $78. ;
+               format HC02_MOE_VC30 $85. ;
+               format HC01_EST_VC31 $81. ;
+               format HC01_MOE_VC31 $88. ;
+               format HC02_EST_VC31 $99. ;
+               format HC02_MOE_VC31 $106. ;
+               format HC01_EST_VC32 $96. ;
+               format HC01_MOE_VC32 $103. ;
+               format HC02_EST_VC32 $114. ;
+               format HC02_MOE_VC32 $121. ;
+               format HC01_EST_VC33 $100. ;
+               format HC01_MOE_VC33 $107. ;
+               format HC02_EST_VC33 $118. ;
+               format HC02_MOE_VC33 $125. ;
+               format HC01_EST_VC34 $79. ;
+               format HC01_MOE_VC34 $86. ;
+               format HC02_EST_VC34 $97. ;
+               format HC02_MOE_VC34 $104. ;
+               format HC01_EST_VC35 $94. ;
+               format HC01_MOE_VC35 $101. ;
+               format HC02_EST_VC35 $112. ;
+               format HC02_MOE_VC35 $119. ;
+               format HC01_EST_VC36 $98. ;
+               format HC01_MOE_VC36 $105. ;
+               format HC02_EST_VC36 $116. ;
+               format HC02_MOE_VC36 $123. ;
+               format HC01_EST_VC39 $73. ;
+               format HC01_MOE_VC39 $80. ;
+               format HC02_EST_VC39 $91. ;
+               format HC02_MOE_VC39 $98. ;
+               format HC01_EST_VC40 $70. ;
+               format HC01_MOE_VC40 $77. ;
+               format HC02_EST_VC40 $88. ;
+               format HC02_MOE_VC40 $95. ;
+               format HC01_EST_VC41 $73. ;
+               format HC01_MOE_VC41 $80. ;
+               format HC02_EST_VC41 $91. ;
+               format HC02_MOE_VC41 $98. ;
+            input
+                        GEO_id  $
+                        GEO_id2  $
+                        GEO_display_label  $
+                        HC01_EST_VC02  $
+                        HC01_MOE_VC02  $
+                        HC02_EST_VC02  $
+                        HC02_MOE_VC02  $
+                        HC01_EST_VC04  $
+                        HC01_MOE_VC04  $
+                        HC02_EST_VC04  $
+                        HC02_MOE_VC04  $
+                        HC01_EST_VC05  $
+                        HC01_MOE_VC05  $
+                        HC02_EST_VC05  $
+                        HC02_MOE_VC05  $
+                        HC01_EST_VC06  $
+                        HC01_MOE_VC06  $
+                        HC02_EST_VC06  $
+                        HC02_MOE_VC06  $
+                        HC01_EST_VC07  $
+                        HC01_MOE_VC07  $
+                        HC02_EST_VC07  $
+                        HC02_MOE_VC07  $
+                        HC01_EST_VC08  $
+                        HC01_MOE_VC08  $
+                        HC02_EST_VC08  $
+                        HC02_MOE_VC08  $
+                        HC01_EST_VC09  $
+                        HC01_MOE_VC09  $
+                        HC02_EST_VC09  $
+                        HC02_MOE_VC09  $
+                        HC01_EST_VC10  $
+                        HC01_MOE_VC10  $
+                        HC02_EST_VC10  $
+                        HC02_MOE_VC10  $
+                        HC01_EST_VC12  $
+                        HC01_MOE_VC12  $
+                        HC02_EST_VC12  $
+                        HC02_MOE_VC12  $
+                        HC01_EST_VC13  $
+                        HC01_MOE_VC13  $
+                        HC02_EST_VC13  $
+                        HC02_MOE_VC13  $
+                        HC01_EST_VC16  $
+                        HC01_MOE_VC16  $
+												HC02_EST_VC16  $
+                        HC02_MOE_VC16  $
+                        HC01_EST_VC17  $
+                        HC01_MOE_VC17  $
+                        HC02_EST_VC17  $
+                        HC02_MOE_VC17  $
+                        HC01_EST_VC18  $
+                        HC01_MOE_VC18  $
+                        HC02_EST_VC18  $
+                        HC02_MOE_VC18  $
+                        HC01_EST_VC19  $
+                        HC01_MOE_VC19  $
+                        HC02_EST_VC19  $
+                        HC02_MOE_VC19  $
+                        HC01_EST_VC22  $
+                        HC01_MOE_VC22  $
+                        HC02_EST_VC22  $
+                        HC02_MOE_VC22  $
+                        HC01_EST_VC23  $
+                        HC01_MOE_VC23  $
+                        HC02_EST_VC23  $
+                        HC02_MOE_VC23  $
+                        HC01_EST_VC24  $
+                        HC01_MOE_VC24  $
+                        HC02_EST_VC24  $
+                        HC02_MOE_VC24  $
+                        HC01_EST_VC25  $
+                        HC01_MOE_VC25  $
+                        HC02_EST_VC25  $
+                        HC02_MOE_VC25  $
+                        HC01_EST_VC26  $
+                        HC01_MOE_VC26  $
+                        HC02_EST_VC26  $
+                        HC02_MOE_VC26  $
+                        HC01_EST_VC27  $
+                        HC01_MOE_VC27  $
+                        HC02_EST_VC27  $
+                        HC02_MOE_VC27  $
+                        HC01_EST_VC30  $
+                        HC01_MOE_VC30  $
+                        HC02_EST_VC30  $
+                        HC02_MOE_VC30  $
+                        HC01_EST_VC31  $
+                        HC01_MOE_VC31  $
+                        HC02_EST_VC31  $
+                        HC02_MOE_VC31  $
+                        HC01_EST_VC32  $
+                        HC01_MOE_VC32  $
+                        HC02_EST_VC32  $
+                        HC02_MOE_VC32  $
+                        HC01_EST_VC33  $
+                        HC01_MOE_VC33  $
+                        HC02_EST_VC33  $
+                        HC02_MOE_VC33  $
+                        HC01_EST_VC34  $
+                        HC01_MOE_VC34  $
+                        HC02_EST_VC34  $
+                        HC02_MOE_VC34  $
+                        HC01_EST_VC35  $
+                        HC01_MOE_VC35  $
+                        HC02_EST_VC35  $
+                        HC02_MOE_VC35  $
+                        HC01_EST_VC36  $
+                        HC01_MOE_VC36  $
+                        HC02_EST_VC36  $
+                        HC02_MOE_VC36  $
+                        HC01_EST_VC39  $
+                        HC01_MOE_VC39  $
+                        HC02_EST_VC39  $
+                        HC02_MOE_VC39  $
+                        HC01_EST_VC40  $
+                        HC01_MOE_VC40  $
+                        HC02_EST_VC40  $
+                        HC02_MOE_VC40  $
+                        HC01_EST_VC41  $
+                        HC01_MOE_VC41  $
+                        HC02_EST_VC41  $
+                        HC02_MOE_VC41  $
+            ;
+	label
+GEO_id='Id'
+GEO_id2='Id2'
+GEO_display_label='Geography'
+HC01_EST_VC02='Total; Estimate; Households'
+HC01_MOE_VC02='Total; Margin of Error; Households'
+HC02_EST_VC02='Median income (dollars); Estimate; Households'
+HC02_MOE_VC02='Median income (dollars); Margin of Error; Households'
+HC01_EST_VC04='Total; Estimate; Households - One race-- - White'
+HC01_MOE_VC04='Total; Margin of Error; Households - One race-- - White'
+HC02_EST_VC04='Median income (dollars); Estimate; Households - One race-- - White'
+HC02_MOE_VC04='Median income (dollars); Margin of Error; Households - One race-- - White'
+HC01_EST_VC05='Total; Estimate; Households - One race-- - Black or African American'
+HC01_MOE_VC05='Total; Margin of Error; Households - One race-- - Black or African American'
+HC02_EST_VC05='Median income (dollars); Estimate; Households - One race-- - Black or African American'
+HC02_MOE_VC05='Median income (dollars); Margin of Error; Households - One race-- - Black or African American'
+HC01_EST_VC06='Total; Estimate; Households - One race-- - American Indian and Alaska Native'
+HC01_MOE_VC06='Total; Margin of Error; Households - One race-- - American Indian and Alaska Native'
+HC02_EST_VC06='Median income (dollars); Estimate; Households - One race-- - American Indian and Alaska Native'
+HC02_MOE_VC06='Median income (dollars); Margin of Error; Households - One race-- - American Indian and Alaska Native'
+HC01_EST_VC07='Total; Estimate; Households - One race-- - Asian'
+HC01_MOE_VC07='Total; Margin of Error; Households - One race-- - Asian'
+HC02_EST_VC07='Median income (dollars); Estimate; Households - One race-- - Asian'
+HC02_MOE_VC07='Median income (dollars); Margin of Error; Households - One race-- - Asian'
+HC01_EST_VC08='Total; Estimate; Households - One race-- - Native Hawaiian and Other Pacific Islander'
+HC01_MOE_VC08='Total; Margin of Error; Households - One race-- - Native Hawaiian and Other Pacific Islander'
+HC02_EST_VC08='Median income (dollars); Estimate; Households - One race-- - Native Hawaiian and Other Pacific Islander'
+HC02_MOE_VC08='Median income (dollars); Margin of Error; Households - One race-- - Native Hawaiian and Other Pacific Islander'
+HC01_EST_VC09='Total; Estimate; Households - One race-- - Some other race'
+HC01_MOE_VC09='Total; Margin of Error; Households - One race-- - Some other race'
+HC02_EST_VC09='Median income (dollars); Estimate; Households - One race-- - Some other race'
+HC02_MOE_VC09='Median income (dollars); Margin of Error; Households - One race-- - Some other race'
+HC01_EST_VC10='Total; Estimate; Households - Two or more races'
+HC01_MOE_VC10='Total; Margin of Error; Households - Two or more races'
+HC02_EST_VC10='Median income (dollars); Estimate; Households - Two or more races'
+HC02_MOE_VC10='Median income (dollars); Margin of Error; Households - Two or more races'
+HC01_EST_VC12='Total; Estimate; Hispanic or Latino origin (of any race)'
+HC01_MOE_VC12='Total; Margin of Error; Hispanic or Latino origin (of any race)'
+HC02_EST_VC12='Median income (dollars); Estimate; Hispanic or Latino origin (of any race)'
+HC02_MOE_VC12='Median income (dollars); Margin of Error; Hispanic or Latino origin (of any race)'
+HC01_EST_VC13='Total; Estimate; White alone, not Hispanic or Latino'
+HC01_MOE_VC13='Total; Margin of Error; White alone, not Hispanic or Latino'
+HC02_EST_VC13='Median income (dollars); Estimate; White alone, not Hispanic or Latino'
+HC02_MOE_VC13='Median income (dollars); Margin of Error; White alone, not Hispanic or Latino'
+HC01_EST_VC16='Total; Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 15 to 24 years'
+HC01_MOE_VC16='Total; Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 15 to 24 years'
+HC02_EST_VC16='Median income (dollars); Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 15 to 24 years'
+HC02_MOE_VC16='Median income (dollars); Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 15 to 24 years'
+HC01_EST_VC17='Total; Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 25 to 44 years'
+HC01_MOE_VC17='Total; Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 25 to 44 years'
+HC02_EST_VC17='Median income (dollars); Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 25 to 44 years'
+HC02_MOE_VC17='Median income (dollars); Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 25 to 44 years'
+HC01_EST_VC18='Total; Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 45 to 64 years'
+HC01_MOE_VC18='Total; Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 45 to 64 years'
+HC02_EST_VC18='Median income (dollars); Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 45 to 64 years'
+HC02_MOE_VC18='Median income (dollars); Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 45 to 64 years'
+HC01_EST_VC19='Total; Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 65 years and over'
+HC01_MOE_VC19='Total; Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 65 years and over'
+HC02_EST_VC19='Median income (dollars); Estimate; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 65 years and over'
+HC02_MOE_VC19='Median income (dollars); Margin of Error; HOUSEHOLD INCOME BY AGE OF HOUSEHOLDER - 65 years and over'
+HC01_EST_VC22='Total; Estimate; FAMILIES - Families'
+HC01_MOE_VC22='Total; Margin of Error; FAMILIES - Families'
+HC02_EST_VC22='Median income (dollars); Estimate; FAMILIES - Families'
+HC02_MOE_VC22='Median income (dollars); Margin of Error; FAMILIES - Families'
+HC01_EST_VC23='Total; Estimate; FAMILIES - Families - With own children under 18 years'
+HC01_MOE_VC23='Total; Margin of Error; FAMILIES - Families - With own children under 18 years'
+HC02_EST_VC23='Median income (dollars); Estimate; FAMILIES - Families - With own children under 18 years'
+HC02_MOE_VC23='Median income (dollars); Margin of Error; FAMILIES - Families - With own children under 18 years'
+HC01_EST_VC24='Total; Estimate; FAMILIES - Families - With no own children under 18 years'
+HC01_MOE_VC24='Total; Margin of Error; FAMILIES - Families - With no own children under 18 years'
+HC02_EST_VC24='Median income (dollars); Estimate; FAMILIES - Families - With no own children under 18 years'
+HC02_MOE_VC24='Median income (dollars); Margin of Error; FAMILIES - Families - With no own children under 18 years'
+HC01_EST_VC25='Total; Estimate; FAMILIES - Families - Married-couple families'
+HC01_MOE_VC25='Total; Margin of Error; FAMILIES - Families - Married-couple families'
+HC02_EST_VC25='Median income (dollars); Estimate; FAMILIES - Families - Married-couple families'
+HC02_MOE_VC25='Median income (dollars); Margin of Error; FAMILIES - Families - Married-couple families'
+HC01_EST_VC26='Total; Estimate; FAMILIES - Families - Female householder, no husband present'
+HC01_MOE_VC26='Total; Margin of Error; FAMILIES - Families - Female householder, no husband present'
+HC02_EST_VC26='Median income (dollars); Estimate; FAMILIES - Families - Female householder, no husband present'
+HC02_MOE_VC26='Median income (dollars); Margin of Error; FAMILIES - Families - Female householder, no husband present'
+HC01_EST_VC27='Total; Estimate; FAMILIES - Families - Male householder, no wife present'
+HC01_MOE_VC27='Total; Margin of Error; FAMILIES - Families - Male householder, no wife present'
+HC02_EST_VC27='Median income (dollars); Estimate; FAMILIES - Families - Male householder, no wife present'
+HC02_MOE_VC27='Median income (dollars); Margin of Error; FAMILIES - Families - Male householder, no wife present'
+HC01_EST_VC30='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households'
+HC01_MOE_VC30='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households'
+HC02_EST_VC30='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households'
+HC02_MOE_VC30='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households'
+HC01_EST_VC31='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder'
+HC01_MOE_VC31='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder'
+HC02_EST_VC31='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder'
+HC02_MOE_VC31='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder'
+HC01_EST_VC32='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Living alone'
+HC01_MOE_VC32='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Living alone'
+HC02_EST_VC32='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Living alone'
+HC02_MOE_VC32='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Living alone'
+HC01_EST_VC33='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Not living alone'
+HC01_MOE_VC33='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Not living alone'
+HC02_EST_VC33='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Not living alone'
+HC02_MOE_VC33='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Female householder - Not living alone'
+HC01_EST_VC34='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder'
+HC01_MOE_VC34='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder'
+HC02_EST_VC34='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder'
+HC02_MOE_VC34='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder'
+HC01_EST_VC35='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Living alone'
+HC01_MOE_VC35='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Living alone'
+HC02_EST_VC35='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Living alone'
+HC02_MOE_VC35='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Living alone'
+HC01_EST_VC36='Total; Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Not living alone'
+HC01_MOE_VC36='Total; Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Not living alone'
+HC02_EST_VC36='Median income (dollars); Estimate; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Not living alone'
+HC02_MOE_VC36='Median income (dollars); Margin of Error; NONFAMILY HOUSEHOLDS - Nonfamily households - Male householder - Not living alone'
+HC01_EST_VC39='Total; Estimate; PERCENT IMPUTED - Household income in the past 12 months'
+HC01_MOE_VC39='Total; Margin of Error; PERCENT IMPUTED - Household income in the past 12 months'
+HC02_EST_VC39='Median income (dollars); Estimate; PERCENT IMPUTED - Household income in the past 12 months'
+HC02_MOE_VC39='Median income (dollars); Margin of Error; PERCENT IMPUTED - Household income in the past 12 months'
+HC01_EST_VC40='Total; Estimate; PERCENT IMPUTED - Family income in the past 12 months'
+HC01_MOE_VC40='Total; Margin of Error; PERCENT IMPUTED - Family income in the past 12 months'
+HC02_EST_VC40='Median income (dollars); Estimate; PERCENT IMPUTED - Family income in the past 12 months'
+HC02_MOE_VC40='Median income (dollars); Margin of Error; PERCENT IMPUTED - Family income in the past 12 months'
+HC01_EST_VC41='Total; Estimate; PERCENT IMPUTED - Nonfamily income in the past 12 months'
+HC01_MOE_VC41='Total; Margin of Error; PERCENT IMPUTED - Nonfamily income in the past 12 months'
+HC02_EST_VC41='Median income (dollars); Estimate; PERCENT IMPUTED - Nonfamily income in the past 12 months'
+HC02_MOE_VC41='Median income (dollars); Margin of Error; PERCENT IMPUTED - Nonfamily income in the past 12 months'
+;
+run;
+
+proc printto print="&&cont&yr./acs_s1903_&yr._raw.txt" new;
+proc contents data=og&yr..acs_s1903_&yr._raw position; run;
+proc printto; run;
+%mend;
+
+%s1903_1316(13);
+%s1903_1316(14);
+%s1903_1316(15);
+%s1903_1316(16);

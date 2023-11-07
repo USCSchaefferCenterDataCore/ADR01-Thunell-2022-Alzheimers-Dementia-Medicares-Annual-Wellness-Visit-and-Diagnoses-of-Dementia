@@ -1,0 +1,5 @@
+#
+# runpta
+sas -memsize 15G -sortsize 15G -sumsize 15G diag_pta02_05
+sas -memsize 15G -sortsize 15G -sumsize 15G diag_pta06_09
+sas -memsize 15G -sortsize 15G -sumsize 15G diag_pta10_11

@@ -1,0 +1,5 @@
+#
+# runptb
+sas -memsize 15G -sortsize 15G -sumsize 15G diag_ptb02_05
+sas -memsize 15G -sortsize 15G -sumsize 15G diag_ptb06_09
+sas -memsize 15G -sortsize 15G -sumsize 15G diag_ptb10_11

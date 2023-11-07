@@ -1,0 +1,35 @@
+/*** bsfall.mac
+     Macro to merge bsf ab and d files together 
+     This starts to be needed in 2010.
+     Before that a single file with both AB and D enrollment
+     information is available as bsf[yyyy] or den[yyyy], except 
+     in 2009 where the bsf2009ab file also has Part D enrollment
+     status, despite its name.
+     
+     Macro parameters:
+     Positional
+     - year: year to process, 4 digits
+     - inf: prefix for name of the input file, e.g., bsf for bsfab and bsfd
+     - outf:name of output file, e.g., bsfall.
+     Keyword
+     - ilib: input file libname, default=work
+     - olib: output file libname, default=work
+***/
+%macro bsfall(year,inf,outf,ilib=,olib=);
+   %let yr=%substr(&year,3);
+   data &olib..&outf&year;
+      merge
+       &ilib..&inf.ab&year (in=_inab)
+       &ilib..&inf.d&year  (in=_ind)
+      ; /* end merge */
+      by bene_id;
+
+      inbsf_ab = _inab;
+      inbsf_d  = _ind;
+      dupbene=first.bene_id=0 or last.bene_id=0;
+      label dupbene = "Flags if duplicate bene_id (1=dup)"
+            inbsf_ab= "=1 if found on bsfab file"
+            inbsf_d = "=1 if found on bsfd file"
+            ;
+    run;
+%mend;

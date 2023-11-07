@@ -1,0 +1,46 @@
+/*********************************************************************************************/
+TITLE1 "ACS SES - Education";
+
+* AUTHOR: Patricia Ferido;
+
+* DATE: 8/6/2019;
+
+* PURPOSE: Clean S1903 Education Table - pulling info from Percent HSgrads
+	& Bachelors for 65 and over
+	
+	Input variables:
+	- yr - year of last in 5 year range
+	- zctavar - geography variable for ZCTA 5
+	- median_hh_inc - variable for median household inc
+	- keepvar - other variables you want to keep, separated by space
+	- renamevar - name of keep vars in order, separated by space;
+
+* INPUT: acs_[yr]_5yr_S1903_with_ann.xlsx;
+
+* OUTPUT: acs_s1903_[yrs]_raw, acs_s1903_;
+
+options compress=yes nocenter ls=150 ps=200 errors=5  errorcheck=strict mprint merror
+	mergenoby=warn varlenchk=error dkricond=error dkrocond=error msglevel=i;
+/*********************************************************************************************/
+
+%macro medinc(yr,zctavar,medhhinc,keepvar=,renamevar=);
+
+%if "&keepvar" ne "" %then %let keepvarcount=%sysfunc(countw(&keepvar));
+
+data medinc_&yr.;
+	format zcta5 year;
+	set og&yr..acs_s1903_&yr._raw;
+	year=20&yr;
+	if find(&zctavar,'ZCTA5') then &zctavar=substr(&zctavar,6);
+	zcta5=compress(&zctavar,,'dk')*1;
+	median_hh_inc=compress(&medhhinc,'.','dk')*1;
+	%if "&keepvar" ne "" %then %do i=1 %to &keepvarcount;
+		%let keep=%scan(&keepvar,&i,' ');
+		%let rename=%scan(&renamevar,&i,' ');
+		&rename=compress(&keep,'.','dk')*1;
+	%end;
+	keep zcta5 median_hh_inc &renamevar year;
+run;
+
+proc sort data=medinc_&yr.; by zcta5 year; run;
+%mend;

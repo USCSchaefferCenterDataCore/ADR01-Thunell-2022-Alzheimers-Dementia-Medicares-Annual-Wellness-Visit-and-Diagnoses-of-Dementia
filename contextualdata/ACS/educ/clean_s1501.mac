@@ -1,0 +1,60 @@
+/*********************************************************************************************/
+TITLE1 "ACS SES - Education"; 
+
+* AUTHOR: Patricia Ferido;
+* EDITED BY: Khristina Lung;
+
+* CREATION DATE: 8/6/2019;
+* EDITED: 9/24/2019 (added total population)
+
+* PURPOSE: Clean S1501 Education Table - pulling info from Percent HSgrads
+	& Bachelors
+	
+	Input variables:
+	- yr - year of last in 5 year range
+	- zctavar - geography variable for ZCTA 5
+	-	total18_24var - population from age 18 to 24
+	-	total25var - population of 25 and over
+	-	total65var - population of 65 and over
+	-	hsgvartotal - percent of total population with hs degree
+	-	bachvartotal - percent of total population with bachelors
+	-	hsgvar65 - percent of 65 and over with hs degree
+	-	bachvar65- percent of 65 and over with bachelors
+	- keepvar - other variables you want to keep, separated by space
+	- renamevar - name of keep vars in order, separated by space;
+
+* INPUT: acs_[yr]_5yr_S1501_with_ann.xlsx;
+
+* OUTPUT: acs_s1501_[yrs]_raw, acs_s1501_;
+
+options compress=yes nocenter ls=150 ps=200 errors=5  errorcheck=strict mprint merror
+	mergenoby=warn varlenchk=error dkricond=error dkrocond=error msglevel=i;
+/*********************************************************************************************/
+
+%macro educ_over65(yr,zctavar,total18_24var,total25var,total65var,hsgvartotal,bachvartotal,hsgvar65,bachvar65,keepvar=,renamevar=);
+
+%if "&keepvar" ne "" %then %let keepvarcount=%sysfunc(countw(&keepvar));
+
+data educ&yr.;
+	format zcta5 year;
+	set og&yr..acs_s1501_&yr._raw;
+	year=20&yr;
+	if find(&zctavar,'ZCTA5') then &zctavar=substr(&zctavar,7); 
+	zcta5=compress(&zctavar,,'dk')*1;
+	total_18_24=compress(&total18_24var,'.','dk')*1;
+	total_25over=compress(&total25var,'.','dk')*1;
+	total_65over=compress(&total65var,'.','dk')*1;
+	pct_hsgrads_total=compress(&hsgvartotal,'.','dk')*1;
+	pct_bachelors_total=compress(&bachvartotal,'.','dk')*1;
+	pct_hsgrads_65over=compress(&hsgvar65,'.','dk')*1;
+	pct_bachelors_65over=compress(&bachvar65,'.','dk')*1;
+	%if "&keepvar" ne "" %then %do i=1 %to &keepvarcount;
+		%let keep=%scan(&keepvar,&i,' ');
+		%let rename=%scan(&renamevar,&i,' ');
+		&rename=compress(&keep,'.','dk')*1;
+	%end;
+	keep zcta5 total_18_24 total_25over total_65over pct_hsgrads_total pct_bachelors_total pct_hsgrads_65over pct_bachelors_65over &renamevar year;
+run;
+
+proc sort data=educ&yr.; by zcta5 year; run;
+%mend;

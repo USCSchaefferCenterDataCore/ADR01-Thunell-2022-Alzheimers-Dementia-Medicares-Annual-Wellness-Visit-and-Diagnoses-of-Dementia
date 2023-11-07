@@ -1,0 +1,13 @@
+/* macro to list variables from [vlist] with vpre as prefix and
+   vsuf as suffix */
+%macro listvars(vlist,vpre=,vsuf=);
+   %let v=1;
+   %let vstem=%scan(&vlist,&v);
+   %do %while (%length(&vstem)>0);
+
+       &vpre&vstem&vsuf
+
+       %let v=%eval(&v+1);
+       %let vstem=%scan(&vlist,&v);
+   %end;
+%mend listvars;

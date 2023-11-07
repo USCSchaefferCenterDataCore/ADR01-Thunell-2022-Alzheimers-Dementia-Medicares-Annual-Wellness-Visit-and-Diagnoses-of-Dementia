@@ -1,0 +1,956 @@
+/*********************************************************************************************/
+TITLE1 "ACS SES - Education";
+
+* AUTHOR: Patricia Ferido;
+
+* DATE: 8/6/2019;
+
+* PURPOSE: Macro to read in ACS 5 year Summary Table S1501
+
+	Input variables:
+		yr - last year represented in the 5 year Summary Table;
+	
+* INPUT: acs_[yr]_5yr_S1501_with_ann.xlsx;
+
+* OUTPUT: acs_s1501_[yrs]_raw, acs_s1501_;
+
+options compress=yes nocenter ls=150 ps=200 errors=5  errorcheck=strict mprint merror
+	mergenoby=warn varlenchk=error dkricond=error dkrocond=error msglevel=i;
+/*********************************************************************************************/
+
+%macro s1501_1114(yr);
+data og&yr..acs_s1501_&yr._raw;
+	infile "&&raw&yr./ACS_&yr._5YR_S1501_with_ann.csv" delimiter = "," MISSOVER DSD lrecl=32767 firstobs=3 ;
+	informat geo_id $15.
+		 geo_id2 $15.
+		 GEO_display_label $15.
+		 HC01_EST_VC01 $15.
+		 HC01_MOE_VC01 $15.
+		 HC02_EST_VC01 $15.
+		 HC02_MOE_VC01 $15.
+		 HC03_EST_VC01 $15.
+		 HC03_MOE_VC01 $15.
+		 HC01_EST_VC02 $15.
+		 HC01_MOE_VC02 $15.
+		 HC02_EST_VC02 $15.
+		 HC02_MOE_VC02 $15.
+		 HC03_EST_VC02 $15.
+		 HC03_MOE_VC02 $15.
+		 HC01_EST_VC03 $15.
+		 HC01_MOE_VC03 $15.
+		 HC02_EST_VC03 $15.
+		 HC02_MOE_VC03 $15.
+		 HC03_EST_VC03 $15.
+		 HC03_MOE_VC03 $15.
+		 HC01_EST_VC04 $15.
+		 HC01_MOE_VC04 $15.
+		 HC02_EST_VC04 $15.
+		 HC02_MOE_VC04 $15.
+		 HC03_EST_VC04 $15.
+		 HC03_MOE_VC04 $15.
+		 HC01_EST_VC05 $15.
+		 HC01_MOE_VC05 $15.
+		 HC02_EST_VC05 $15.
+		 HC02_MOE_VC05 $15.
+		 HC03_EST_VC05 $15.
+		 HC03_MOE_VC05 $15.
+		 HC01_EST_VC07 $15.
+		 HC01_MOE_VC07 $15.
+		 HC02_EST_VC07 $15.
+		 HC02_MOE_VC07 $15.
+		 HC03_EST_VC07 $15.
+		 HC03_MOE_VC07 $15.
+		 HC01_EST_VC08 $15.
+		 HC01_MOE_VC08 $15.
+		 HC02_EST_VC08 $15.
+		 HC02_MOE_VC08 $15.
+		 HC03_EST_VC08 $15.
+		 HC03_MOE_VC08 $15.
+		 HC01_EST_VC09 $15.
+		 HC01_MOE_VC09 $15.
+		 HC02_EST_VC09 $15.
+		 HC02_MOE_VC09 $15.
+		 HC03_EST_VC09 $15.
+		 HC03_MOE_VC09 $15.
+		 HC01_EST_VC10 $15.
+		 HC01_MOE_VC10 $15.
+		 HC02_EST_VC10 $15.
+		 HC02_MOE_VC10 $15.
+		 HC03_EST_VC10 $15.
+		 HC03_MOE_VC10 $15.
+		 HC01_EST_VC11 $15.
+		 HC01_MOE_VC11 $15.
+		 HC02_EST_VC11 $15.
+		 HC02_MOE_VC11 $15.
+		 HC03_EST_VC11 $15.
+		 HC03_MOE_VC11 $15.
+		 HC01_EST_VC12 $15.
+		 HC01_MOE_VC12 $15.
+		 HC02_EST_VC12 $15.
+		 HC02_MOE_VC12 $15.
+		 HC03_EST_VC12 $15.
+		 HC03_MOE_VC12 $15.
+		 HC01_EST_VC13 $15.
+		 HC01_MOE_VC13 $15.
+		 HC02_EST_VC13 $15.
+		 HC02_MOE_VC13 $15.
+		 HC03_EST_VC13 $15.
+		 HC03_MOE_VC13 $15.
+		 HC01_EST_VC14 $15.
+		 HC01_MOE_VC14 $15.
+		 HC02_EST_VC14 $15.
+		 HC02_MOE_VC14 $15.
+		 HC03_EST_VC14 $15.
+		 HC03_MOE_VC14 $15.
+		 HC01_EST_VC16 $15.
+		 HC01_MOE_VC16 $15.
+		 HC02_EST_VC16 $15.
+		 HC02_MOE_VC16 $15.
+		 HC03_EST_VC16 $15.
+		 HC03_MOE_VC16 $15.
+		 HC01_EST_VC17 $15.
+		 HC01_MOE_VC17 $15.
+		 HC02_EST_VC17 $15.
+		 HC02_MOE_VC17 $15.
+		 HC03_EST_VC17 $15.
+		 HC03_MOE_VC17 $15.
+		 HC01_EST_VC19 $15.
+		 HC01_MOE_VC19 $15.
+		 HC02_EST_VC19 $15.
+		 HC02_MOE_VC19 $15.
+		 HC03_EST_VC19 $15.
+		 HC03_MOE_VC19 $15.
+		 HC01_EST_VC20 $15.
+		 HC01_MOE_VC20 $15.
+		 HC02_EST_VC20 $15.
+		 HC02_MOE_VC20 $15.
+		 HC03_EST_VC20 $15.
+		 HC03_MOE_VC20 $15.
+		 HC01_EST_VC21 $15.
+		 HC01_MOE_VC21 $15.
+		 HC02_EST_VC21 $15.
+		 HC02_MOE_VC21 $15.
+		 HC03_EST_VC21 $15.
+		 HC03_MOE_VC21 $15.
+		 HC01_EST_VC23 $15.
+		 HC01_MOE_VC23 $15.
+		 HC02_EST_VC23 $15.
+		 HC02_MOE_VC23 $15.
+		 HC03_EST_VC23 $15.
+		 HC03_MOE_VC23 $15.
+		 HC01_EST_VC24 $15.
+		 HC01_MOE_VC24 $15.
+		 HC02_EST_VC24 $15.
+		 HC02_MOE_VC24 $15.
+		 HC03_EST_VC24 $15.
+		 HC03_MOE_VC24 $15.
+		 HC01_EST_VC25 $15.
+		 HC01_MOE_VC25 $15.
+		 HC02_EST_VC25 $15.
+		 HC02_MOE_VC25 $15.
+		 HC03_EST_VC25 $15.
+		 HC03_MOE_VC25 $15.
+		 HC01_EST_VC27 $15.
+		 HC01_MOE_VC27 $15.
+		 HC02_EST_VC27 $15.
+		 HC02_MOE_VC27 $15.
+		 HC03_EST_VC27 $15.
+		 HC03_MOE_VC27 $15.
+		 HC01_EST_VC28 $15.
+		 HC01_MOE_VC28 $15.
+		 HC02_EST_VC28 $15.
+		 HC02_MOE_VC28 $15.
+		 HC03_EST_VC28 $15.
+		 HC03_MOE_VC28 $15.
+		 HC01_EST_VC29 $15.
+		 HC01_MOE_VC29 $15.
+		 HC02_EST_VC29 $15.
+		 HC02_MOE_VC29 $15.
+		 HC03_EST_VC29 $15.
+		 HC03_MOE_VC29 $15.
+		 HC01_EST_VC31 $15.
+		 HC01_MOE_VC31 $15.
+		 HC02_EST_VC31 $15.
+		 HC02_MOE_VC31 $15.
+		 HC03_EST_VC31 $15.
+		 HC03_MOE_VC31 $15.
+		 HC01_EST_VC32 $15.
+		 HC01_MOE_VC32 $15.
+		 HC02_EST_VC32 $15.
+		 HC02_MOE_VC32 $15.
+		 HC03_EST_VC32 $15.
+		 HC03_MOE_VC32 $15.
+		 HC01_EST_VC33 $15.
+		 HC01_MOE_VC33 $15.
+		 HC02_EST_VC33 $15.
+		 HC02_MOE_VC33 $15.
+		 HC03_EST_VC33 $15.
+		 HC03_MOE_VC33 $15.
+		 HC01_EST_VC37 $15.
+		 HC01_MOE_VC37 $15.
+		 HC02_EST_VC37 $15.
+		 HC02_MOE_VC37 $15.
+		 HC03_EST_VC37 $15.
+		 HC03_MOE_VC37 $15.
+		 HC01_EST_VC38 $15.
+		 HC01_MOE_VC38 $15.
+		 HC02_EST_VC38 $15.
+		 HC02_MOE_VC38 $15.
+		 HC03_EST_VC38 $15.
+		 HC03_MOE_VC38 $15.
+		 HC01_EST_VC39 $15.
+		 HC01_MOE_VC39 $15.
+		 HC02_EST_VC39 $15.
+		 HC02_MOE_VC39 $15.
+		 HC03_EST_VC39 $15.
+		 HC03_MOE_VC39 $15.
+		 HC01_EST_VC40 $15.
+		 HC01_MOE_VC40 $15.
+		 HC02_EST_VC40 $15.
+		 HC02_MOE_VC40 $15.
+		 HC03_EST_VC40 $15.
+		 HC03_MOE_VC40 $15.
+		 HC01_EST_VC44 $15.
+		 HC01_MOE_VC44 $15.
+		 HC02_EST_VC44 $15.
+		 HC02_MOE_VC44 $15.
+		 HC03_EST_VC44 $15.
+		 HC03_MOE_VC44 $15.
+		 HC01_EST_VC45 $15.
+		 HC01_MOE_VC45 $15.
+		 HC02_EST_VC45 $15.
+		 HC02_MOE_VC45 $15.
+		 HC03_EST_VC45 $15.
+		 HC03_MOE_VC45 $15.
+		 HC01_EST_VC46 $15.
+		 HC01_MOE_VC46 $15.
+		 HC02_EST_VC46 $15.
+		 HC02_MOE_VC46 $15.
+		 HC03_EST_VC46 $15.
+		 HC03_MOE_VC46 $15.
+		 HC01_EST_VC47 $15.
+		 HC01_MOE_VC47 $15.
+		 HC02_EST_VC47 $15.
+		 HC02_MOE_VC47 $15.
+		 HC03_EST_VC47 $15.
+		 HC03_MOE_VC47 $15.
+		 HC01_EST_VC48 $15.
+		 HC01_MOE_VC48 $15.
+		 HC02_EST_VC48 $15.
+		 HC02_MOE_VC48 $15.
+		 HC03_EST_VC48 $15.
+		 HC03_MOE_VC48 $15.
+		 HC01_EST_VC49 $15.
+		 HC01_MOE_VC49 $15.
+		 HC02_EST_VC49 $15.
+		 HC02_MOE_VC49 $15.
+		 HC03_EST_VC49 $15.
+		 HC03_MOE_VC49 $15.
+		 HC01_EST_VC52 $15.
+		 HC01_MOE_VC52 $15.
+		 HC02_EST_VC52 $15.
+		 HC02_MOE_VC52 $15.
+		 HC03_EST_VC52 $15.
+		 HC03_MOE_VC52 $15.;
+	format geo_id $15.
+		 geo_id2 $15.
+		 GEO_display_label $15.
+		 HC01_EST_VC01 $15.
+		 HC01_MOE_VC01 $15.
+		 HC02_EST_VC01 $15.
+		 HC02_MOE_VC01 $15.
+		 HC03_EST_VC01 $15.
+		 HC03_MOE_VC01 $15.
+		 HC01_EST_VC02 $15.
+		 HC01_MOE_VC02 $15.
+		 HC02_EST_VC02 $15.
+		 HC02_MOE_VC02 $15.
+		 HC03_EST_VC02 $15.
+		 HC03_MOE_VC02 $15.
+		 HC01_EST_VC03 $15.
+		 HC01_MOE_VC03 $15.
+		 HC02_EST_VC03 $15.
+		 HC02_MOE_VC03 $15.
+		 HC03_EST_VC03 $15.
+		 HC03_MOE_VC03 $15.
+		 HC01_EST_VC04 $15.
+		 HC01_MOE_VC04 $15.
+		 HC02_EST_VC04 $15.
+		 HC02_MOE_VC04 $15.
+		 HC03_EST_VC04 $15.
+		 HC03_MOE_VC04 $15.
+		 HC01_EST_VC05 $15.
+		 HC01_MOE_VC05 $15.
+		 HC02_EST_VC05 $15.
+		 HC02_MOE_VC05 $15.
+		 HC03_EST_VC05 $15.
+		 HC03_MOE_VC05 $15.
+		 HC01_EST_VC07 $15.
+		 HC01_MOE_VC07 $15.
+		 HC02_EST_VC07 $15.
+		 HC02_MOE_VC07 $15.
+		 HC03_EST_VC07 $15.
+		 HC03_MOE_VC07 $15.
+		 HC01_EST_VC08 $15.
+		 HC01_MOE_VC08 $15.
+		 HC02_EST_VC08 $15.
+		 HC02_MOE_VC08 $15.
+		 HC03_EST_VC08 $15.
+		 HC03_MOE_VC08 $15.
+		 HC01_EST_VC09 $15.
+		 HC01_MOE_VC09 $15.
+		 HC02_EST_VC09 $15.
+		 HC02_MOE_VC09 $15.
+		 HC03_EST_VC09 $15.
+		 HC03_MOE_VC09 $15.
+		 HC01_EST_VC10 $15.
+		 HC01_MOE_VC10 $15.
+		 HC02_EST_VC10 $15.
+		 HC02_MOE_VC10 $15.
+		 HC03_EST_VC10 $15.
+		 HC03_MOE_VC10 $15.
+		 HC01_EST_VC11 $15.
+		 HC01_MOE_VC11 $15.
+		 HC02_EST_VC11 $15.
+		 HC02_MOE_VC11 $15.
+		 HC03_EST_VC11 $15.
+		 HC03_MOE_VC11 $15.
+		 HC01_EST_VC12 $15.
+		 HC01_MOE_VC12 $15.
+		 HC02_EST_VC12 $15.
+		 HC02_MOE_VC12 $15.
+		 HC03_EST_VC12 $15.
+		 HC03_MOE_VC12 $15.
+		 HC01_EST_VC13 $15.
+		 HC01_MOE_VC13 $15.
+		 HC02_EST_VC13 $15.
+		 HC02_MOE_VC13 $15.
+		 HC03_EST_VC13 $15.
+		 HC03_MOE_VC13 $15.
+		 HC01_EST_VC14 $15.
+		 HC01_MOE_VC14 $15.
+		 HC02_EST_VC14 $15.
+		 HC02_MOE_VC14 $15.
+		 HC03_EST_VC14 $15.
+		 HC03_MOE_VC14 $15.
+		 HC01_EST_VC16 $15.
+		 HC01_MOE_VC16 $15.
+		 HC02_EST_VC16 $15.
+		 HC02_MOE_VC16 $15.
+		 HC03_EST_VC16 $15.
+		 HC03_MOE_VC16 $15.
+		 HC01_EST_VC17 $15.
+		 HC01_MOE_VC17 $15.
+		 HC02_EST_VC17 $15.
+		 HC02_MOE_VC17 $15.
+		 HC03_EST_VC17 $15.
+		 HC03_MOE_VC17 $15.
+		 HC01_EST_VC19 $15.
+		 HC01_MOE_VC19 $15.
+		 HC02_EST_VC19 $15.
+		 HC02_MOE_VC19 $15.
+		 HC03_EST_VC19 $15.
+		 HC03_MOE_VC19 $15.
+		 HC01_EST_VC20 $15.
+		 HC01_MOE_VC20 $15.
+		 HC02_EST_VC20 $15.
+		 HC02_MOE_VC20 $15.
+		 HC03_EST_VC20 $15.
+		 HC03_MOE_VC20 $15.
+		 HC01_EST_VC21 $15.
+		 HC01_MOE_VC21 $15.
+		 HC02_EST_VC21 $15.
+		 HC02_MOE_VC21 $15.
+		 HC03_EST_VC21 $15.
+		 HC03_MOE_VC21 $15.
+		 HC01_EST_VC23 $15.
+		 HC01_MOE_VC23 $15.
+		 HC02_EST_VC23 $15.
+		 HC02_MOE_VC23 $15.
+		 HC03_EST_VC23 $15.
+		 HC03_MOE_VC23 $15.
+		 HC01_EST_VC24 $15.
+		 HC01_MOE_VC24 $15.
+		 HC02_EST_VC24 $15.
+		 HC02_MOE_VC24 $15.
+		 HC03_EST_VC24 $15.
+		 HC03_MOE_VC24 $15.
+		 HC01_EST_VC25 $15.
+		 HC01_MOE_VC25 $15.
+		 HC02_EST_VC25 $15.
+		 HC02_MOE_VC25 $15.
+		 HC03_EST_VC25 $15.
+		 HC03_MOE_VC25 $15.
+		 HC01_EST_VC27 $15.
+		 HC01_MOE_VC27 $15.
+		 HC02_EST_VC27 $15.
+		 HC02_MOE_VC27 $15.
+		 HC03_EST_VC27 $15.
+		 HC03_MOE_VC27 $15.
+		 HC01_EST_VC28 $15.
+		 HC01_MOE_VC28 $15.
+		 HC02_EST_VC28 $15.
+		 HC02_MOE_VC28 $15.
+		 HC03_EST_VC28 $15.
+		 HC03_MOE_VC28 $15.
+		 HC01_EST_VC29 $15.
+		 HC01_MOE_VC29 $15.
+		 HC02_EST_VC29 $15.
+		 HC02_MOE_VC29 $15.
+		 HC03_EST_VC29 $15.
+		 HC03_MOE_VC29 $15.
+		 HC01_EST_VC31 $15.
+		 HC01_MOE_VC31 $15.
+		 HC02_EST_VC31 $15.
+		 HC02_MOE_VC31 $15.
+		 HC03_EST_VC31 $15.
+		 HC03_MOE_VC31 $15.
+		 HC01_EST_VC32 $15.
+		 HC01_MOE_VC32 $15.
+		 HC02_EST_VC32 $15.
+		 HC02_MOE_VC32 $15.
+		 HC03_EST_VC32 $15.
+		 HC03_MOE_VC32 $15.
+		 HC01_EST_VC33 $15.
+		 HC01_MOE_VC33 $15.
+		 HC02_EST_VC33 $15.
+		 HC02_MOE_VC33 $15.
+		 HC03_EST_VC33 $15.
+		 HC03_MOE_VC33 $15.
+		 HC01_EST_VC37 $15.
+		 HC01_MOE_VC37 $15.
+		 HC02_EST_VC37 $15.
+		 HC02_MOE_VC37 $15.
+		 HC03_EST_VC37 $15.
+		 HC03_MOE_VC37 $15.
+		 HC01_EST_VC38 $15.
+		 HC01_MOE_VC38 $15.
+		 HC02_EST_VC38 $15.
+		 HC02_MOE_VC38 $15.
+		 HC03_EST_VC38 $15.
+		 HC03_MOE_VC38 $15.
+		 HC01_EST_VC39 $15.
+		 HC01_MOE_VC39 $15.
+		 HC02_EST_VC39 $15.
+		 HC02_MOE_VC39 $15.
+		 HC03_EST_VC39 $15.
+		 HC03_MOE_VC39 $15.
+		 HC01_EST_VC40 $15.
+		 HC01_MOE_VC40 $15.
+		 HC02_EST_VC40 $15.
+		 HC02_MOE_VC40 $15.
+		 HC03_EST_VC40 $15.
+		 HC03_MOE_VC40 $15.
+		 HC01_EST_VC44 $15.
+		 HC01_MOE_VC44 $15.
+		 HC02_EST_VC44 $15.
+		 HC02_MOE_VC44 $15.
+		 HC03_EST_VC44 $15.
+		 HC03_MOE_VC44 $15.
+		 HC01_EST_VC45 $15.
+		 HC01_MOE_VC45 $15.
+		 HC02_EST_VC45 $15.
+		 HC02_MOE_VC45 $15.
+		 HC03_EST_VC45 $15.
+		 HC03_MOE_VC45 $15.
+		 HC01_EST_VC46 $15.
+		 HC01_MOE_VC46 $15.
+		 HC02_EST_VC46 $15.
+		 HC02_MOE_VC46 $15.
+		 HC03_EST_VC46 $15.
+		 HC03_MOE_VC46 $15.
+		 HC01_EST_VC47 $15.
+		 HC01_MOE_VC47 $15.
+		 HC02_EST_VC47 $15.
+		 HC02_MOE_VC47 $15.
+		 HC03_EST_VC47 $15.
+		 HC03_MOE_VC47 $15.
+		 HC01_EST_VC48 $15.
+		 HC01_MOE_VC48 $15.
+		 HC02_EST_VC48 $15.
+		 HC02_MOE_VC48 $15.
+		 HC03_EST_VC48 $15.
+		 HC03_MOE_VC48 $15.
+		 HC01_EST_VC49 $15.
+		 HC01_MOE_VC49 $15.
+		 HC02_EST_VC49 $15.
+		 HC02_MOE_VC49 $15.
+		 HC03_EST_VC49 $15.
+		 HC03_MOE_VC49 $15.
+		 HC01_EST_VC52 $15.
+		 HC01_MOE_VC52 $15.
+		 HC02_EST_VC52 $15.
+		 HC02_MOE_VC52 $15.
+		 HC03_EST_VC52 $15.
+		 HC03_MOE_VC52 $15.;
+	input
+	GEO_id $
+	GEO_id2 $
+	GEO_display_label $
+	HC01_EST_VC01 $
+	HC01_MOE_VC01 $
+	HC02_EST_VC01 $
+	HC02_MOE_VC01 $
+	HC03_EST_VC01 $
+	HC03_MOE_VC01 $
+	HC01_EST_VC02 $
+	HC01_MOE_VC02 $
+	HC02_EST_VC02 $
+	HC02_MOE_VC02 $
+	HC03_EST_VC02 $
+	HC03_MOE_VC02 $
+	HC01_EST_VC03 $
+	HC01_MOE_VC03 $
+	HC02_EST_VC03 $
+	HC02_MOE_VC03 $
+	HC03_EST_VC03 $
+	HC03_MOE_VC03 $
+	HC01_EST_VC04 $
+	HC01_MOE_VC04 $
+	HC02_EST_VC04 $
+	HC02_MOE_VC04 $
+	HC03_EST_VC04 $
+	HC03_MOE_VC04 $
+	HC01_EST_VC05 $
+	HC01_MOE_VC05 $
+	HC02_EST_VC05 $
+	HC02_MOE_VC05 $
+	HC03_EST_VC05 $
+	HC03_MOE_VC05 $
+	HC01_EST_VC07 $
+	HC01_MOE_VC07 $
+	HC02_EST_VC07 $
+	HC02_MOE_VC07 $
+	HC03_EST_VC07 $
+	HC03_MOE_VC07 $
+	HC01_EST_VC08 $
+	HC01_MOE_VC08 $
+	HC02_EST_VC08 $
+	HC02_MOE_VC08 $
+	HC03_EST_VC08 $
+	HC03_MOE_VC08 $
+	HC01_EST_VC09 $
+	HC01_MOE_VC09 $
+	HC02_EST_VC09 $
+	HC02_MOE_VC09 $
+	HC03_EST_VC09 $
+	HC03_MOE_VC09 $
+	HC01_EST_VC10 $
+	HC01_MOE_VC10 $
+	HC02_EST_VC10 $
+	HC02_MOE_VC10 $
+	HC03_EST_VC10 $
+	HC03_MOE_VC10 $
+	HC01_EST_VC11 $
+	HC01_MOE_VC11 $
+	HC02_EST_VC11 $
+	HC02_MOE_VC11 $
+	HC03_EST_VC11 $
+	HC03_MOE_VC11 $
+	HC01_EST_VC12 $
+	HC01_MOE_VC12 $
+	HC02_EST_VC12 $
+	HC02_MOE_VC12 $
+	HC03_EST_VC12 $
+	HC03_MOE_VC12 $
+	HC01_EST_VC13 $
+	HC01_MOE_VC13 $
+	HC02_EST_VC13 $
+	HC02_MOE_VC13 $
+	HC03_EST_VC13 $
+	HC03_MOE_VC13 $
+	HC01_EST_VC14 $
+	HC01_MOE_VC14 $
+	HC02_EST_VC14 $
+	HC02_MOE_VC14 $
+	HC03_EST_VC14 $
+	HC03_MOE_VC14 $
+	HC01_EST_VC16 $
+	HC01_MOE_VC16 $
+	HC02_EST_VC16 $
+	HC02_MOE_VC16 $
+	HC03_EST_VC16 $
+	HC03_MOE_VC16 $
+	HC01_EST_VC17 $
+	HC01_MOE_VC17 $
+	HC02_EST_VC17 $
+	HC02_MOE_VC17 $
+	HC03_EST_VC17 $
+	HC03_MOE_VC17 $
+	HC01_EST_VC19 $
+	HC01_MOE_VC19 $
+	HC02_EST_VC19 $
+	HC02_MOE_VC19 $
+	HC03_EST_VC19 $
+	HC03_MOE_VC19 $
+	HC01_EST_VC20 $
+	HC01_MOE_VC20 $
+	HC02_EST_VC20 $
+	HC02_MOE_VC20 $
+	HC03_EST_VC20 $
+	HC03_MOE_VC20 $
+	HC01_EST_VC21 $
+	HC01_MOE_VC21 $
+	HC02_EST_VC21 $
+	HC02_MOE_VC21 $
+	HC03_EST_VC21 $
+	HC03_MOE_VC21 $
+	HC01_EST_VC23 $
+	HC01_MOE_VC23 $
+	HC02_EST_VC23 $
+	HC02_MOE_VC23 $
+	HC03_EST_VC23 $
+	HC03_MOE_VC23 $
+	HC01_EST_VC24 $
+	HC01_MOE_VC24 $
+	HC02_EST_VC24 $
+	HC02_MOE_VC24 $
+	HC03_EST_VC24 $
+	HC03_MOE_VC24 $
+	HC01_EST_VC25 $
+	HC01_MOE_VC25 $
+	HC02_EST_VC25 $
+	HC02_MOE_VC25 $
+	HC03_EST_VC25 $
+	HC03_MOE_VC25 $
+	HC01_EST_VC27 $
+	HC01_MOE_VC27 $
+	HC02_EST_VC27 $
+	HC02_MOE_VC27 $
+	HC03_EST_VC27 $
+	HC03_MOE_VC27 $
+	HC01_EST_VC28 $
+	HC01_MOE_VC28 $
+	HC02_EST_VC28 $
+	HC02_MOE_VC28 $
+	HC03_EST_VC28 $
+	HC03_MOE_VC28 $
+	HC01_EST_VC29 $
+	HC01_MOE_VC29 $
+	HC02_EST_VC29 $
+	HC02_MOE_VC29 $
+	HC03_EST_VC29 $
+	HC03_MOE_VC29 $
+	HC01_EST_VC31 $
+	HC01_MOE_VC31 $
+	HC02_EST_VC31 $
+	HC02_MOE_VC31 $
+	HC03_EST_VC31 $
+	HC03_MOE_VC31 $
+	HC01_EST_VC32 $
+	HC01_MOE_VC32 $
+	HC02_EST_VC32 $
+	HC02_MOE_VC32 $
+	HC03_EST_VC32 $
+	HC03_MOE_VC32 $
+	HC01_EST_VC33 $
+	HC01_MOE_VC33 $
+	HC02_EST_VC33 $
+	HC02_MOE_VC33 $
+	HC03_EST_VC33 $
+	HC03_MOE_VC33 $
+	HC01_EST_VC37 $
+	HC01_MOE_VC37 $
+	HC02_EST_VC37 $
+	HC02_MOE_VC37 $
+	HC03_EST_VC37 $
+	HC03_MOE_VC37 $
+	HC01_EST_VC38 $
+	HC01_MOE_VC38 $
+	HC02_EST_VC38 $
+	HC02_MOE_VC38 $
+	HC03_EST_VC38 $
+	HC03_MOE_VC38 $
+	HC01_EST_VC39 $
+	HC01_MOE_VC39 $
+	HC02_EST_VC39 $
+	HC02_MOE_VC39 $
+	HC03_EST_VC39 $
+	HC03_MOE_VC39 $
+	HC01_EST_VC40 $
+	HC01_MOE_VC40 $
+	HC02_EST_VC40 $
+	HC02_MOE_VC40 $
+	HC03_EST_VC40 $
+	HC03_MOE_VC40 $
+	HC01_EST_VC44 $
+	HC01_MOE_VC44 $
+	HC02_EST_VC44 $
+	HC02_MOE_VC44 $
+	HC03_EST_VC44 $
+	HC03_MOE_VC44 $
+	HC01_EST_VC45 $
+	HC01_MOE_VC45 $
+	HC02_EST_VC45 $
+	HC02_MOE_VC45 $
+	HC03_EST_VC45 $
+	HC03_MOE_VC45 $
+	HC01_EST_VC46 $
+	HC01_MOE_VC46 $
+	HC02_EST_VC46 $
+	HC02_MOE_VC46 $
+	HC03_EST_VC46 $
+	HC03_MOE_VC46 $
+	HC01_EST_VC47 $
+	HC01_MOE_VC47 $
+	HC02_EST_VC47 $
+	HC02_MOE_VC47 $
+	HC03_EST_VC47 $
+	HC03_MOE_VC47 $
+	HC01_EST_VC48 $
+	HC01_MOE_VC48 $
+	HC02_EST_VC48 $
+	HC02_MOE_VC48 $
+	HC03_EST_VC48 $
+	HC03_MOE_VC48 $
+	HC01_EST_VC49 $
+	HC01_MOE_VC49 $
+	HC02_EST_VC49 $
+	HC02_MOE_VC49 $
+	HC03_EST_VC49 $
+	HC03_MOE_VC49 $
+	HC01_EST_VC52 $
+	HC01_MOE_VC52 $
+	HC02_EST_VC52 $
+	HC02_MOE_VC52 $
+	HC03_EST_VC52 $
+	HC03_MOE_VC52 $;
+	label
+		geo_id="Id - long geo"
+	geo_id2="Id2 - ZCTA5 no leading 0's"
+	GEO_display_label="ZCTA5 + 5 digit ZCTA"
+	HC01_EST_VC01="Total; Estimate; Population 18 to 24 years"
+	HC01_MOE_VC01="Total; Margin of Error; Population 18 to 24 years"
+	HC02_EST_VC01="Male; Estimate; Population 18 to 24 years"
+	HC02_MOE_VC01="Male; Margin of Error; Population 18 to 24 years"
+	HC03_EST_VC01="Female; Estimate; Population 18 to 24 years"
+	HC03_MOE_VC01="Female; Margin of Error; Population 18 to 24 years"
+	HC01_EST_VC02="Total; Estimate; Less than high school graduate"
+	HC01_MOE_VC02="Total; Margin of Error; Less than high school graduate"
+	HC02_EST_VC02="Male; Estimate; Less than high school graduate"
+	HC02_MOE_VC02="Male; Margin of Error; Less than high school graduate"
+	HC03_EST_VC02="Female; Estimate; Less than high school graduate"
+	HC03_MOE_VC02="Female; Margin of Error; Less than high school graduate"
+	HC01_EST_VC03="Total; Estimate; High school graduate (includes equivalency)"
+	HC01_MOE_VC03="Total; Margin of Error; High school graduate (includes equivalency)"
+	HC02_EST_VC03="Male; Estimate; High school graduate (includes equivalency)"
+	HC02_MOE_VC03="Male; Margin of Error; High school graduate (includes equivalency)"
+	HC03_EST_VC03="Female; Estimate; High school graduate (includes equivalency)"
+	HC03_MOE_VC03="Female; Margin of Error; High school graduate (includes equivalency)"
+	HC01_EST_VC04="Total; Estimate; Some college or associate's degree"
+	HC01_MOE_VC04="Total; Margin of Error; Some college or associate's degree"
+	HC02_EST_VC04="Male; Estimate; Some college or associate's degree"
+	HC02_MOE_VC04="Male; Margin of Error; Some college or associate's degree"
+	HC03_EST_VC04="Female; Estimate; Some college or associate's degree"
+	HC03_MOE_VC04="Female; Margin of Error; Some college or associate's degree"
+	HC01_EST_VC05="Total; Estimate; bachelor's degree or higher"
+	HC01_MOE_VC05="Total; Margin of Error; bachelor's degree or higher"
+	HC02_EST_VC05="Male; Estimate; bachelor's degree or higher"
+	HC02_MOE_VC05="Male; Margin of Error; bachelor's degree or higher"
+	HC03_EST_VC05="Female; Estimate; bachelor's degree or higher"
+	HC03_MOE_VC05="Female; Margin of Error; bachelor's degree or higher"
+	HC01_EST_VC07="Total; Estimate; Population 25 years and over"
+	HC01_MOE_VC07="Total; Margin of Error; Population 25 years and over"
+	HC02_EST_VC07="Male; Estimate; Population 25 years and over"
+	HC02_MOE_VC07="Male; Margin of Error; Population 25 years and over"
+	HC03_EST_VC07="Female; Estimate; Population 25 years and over"
+	HC03_MOE_VC07="Female; Margin of Error; Population 25 years and over"
+	HC01_EST_VC08="Total; Estimate; Less than 9th grade"
+	HC01_MOE_VC08="Total; Margin of Error; Less than 9th grade"
+	HC02_EST_VC08="Male; Estimate; Less than 9th grade"
+	HC02_MOE_VC08="Male; Margin of Error; Less than 9th grade"
+	HC03_EST_VC08="Female; Estimate; Less than 9th grade"
+	HC03_MOE_VC08="Female; Margin of Error; Less than 9th grade"
+	HC01_EST_VC09="Total; Estimate; 9th to 12th grade, no diploma"
+	HC01_MOE_VC09="Total; Margin of Error; 9th to 12th grade, no diploma"
+	HC02_EST_VC09="Male; Estimate; 9th to 12th grade, no diploma"
+	HC02_MOE_VC09="Male; Margin of Error; 9th to 12th grade, no diploma"
+	HC03_EST_VC09="Female; Estimate; 9th to 12th grade, no diploma"
+	HC03_MOE_VC09="Female; Margin of Error; 9th to 12th grade, no diploma"
+	HC01_EST_VC10="Total; Estimate; High school graduate (includes equivalency)"
+	HC01_MOE_VC10="Total; Margin of Error; High school graduate (includes equivalency)"
+	HC02_EST_VC10="Male; Estimate; High school graduate (includes equivalency)"
+	HC02_MOE_VC10="Male; Margin of Error; High school graduate (includes equivalency)"
+	HC03_EST_VC10="Female; Estimate; High school graduate (includes equivalency)"
+	HC03_MOE_VC10="Female; Margin of Error; High school graduate (includes equivalency)"
+	HC01_EST_VC11="Total; Estimate; Some college, no degree"
+	HC01_MOE_VC11="Total; Margin of Error; Some college, no degree"
+	HC02_EST_VC11="Male; Estimate; Some college, no degree"
+	HC02_MOE_VC11="Male; Margin of Error; Some college, no degree"
+	HC03_EST_VC11="Female; Estimate; Some college, no degree"
+	HC03_MOE_VC11="Female; Margin of Error; Some college, no degree"
+	HC01_EST_VC12="Total; Estimate; associate's degree"
+	HC01_MOE_VC12="Total; Margin of Error; associate's degree"
+	HC02_EST_VC12="Male; Estimate; associate's degree"
+	HC02_MOE_VC12="Male; Margin of Error; associate's degree"
+	HC03_EST_VC12="Female; Estimate; associate's degree"
+	HC03_MOE_VC12="Female; Margin of Error; associate's degree"
+	HC01_EST_VC13="Total; Estimate; bachelor's degree"
+	HC01_MOE_VC13="Total; Margin of Error; bachelor's degree"
+	HC02_EST_VC13="Male; Estimate; bachelor's degree"
+	HC02_MOE_VC13="Male; Margin of Error; bachelor's degree"
+	HC03_EST_VC13="Female; Estimate; bachelor's degree"
+	HC03_MOE_VC13="Female; Margin of Error; bachelor's degree"
+	HC01_EST_VC14="Total; Estimate; Graduate or professional degree"
+	HC01_MOE_VC14="Total; Margin of Error; Graduate or professional degree"
+	HC02_EST_VC14="Male; Estimate; Graduate or professional degree"
+	HC02_MOE_VC14="Male; Margin of Error; Graduate or professional degree"
+	HC03_EST_VC14="Female; Estimate; Graduate or professional degree"
+	HC03_MOE_VC14="Female; Margin of Error; Graduate or professional degree"
+	HC01_EST_VC16="Total; Estimate; Percent high school graduate or higher"
+	HC01_MOE_VC16="Total; Margin of Error; Percent high school graduate or higher"
+	HC02_EST_VC16="Male; Estimate; Percent high school graduate or higher"
+	HC02_MOE_VC16="Male; Margin of Error; Percent high school graduate or higher"
+	HC03_EST_VC16="Female; Estimate; Percent high school graduate or higher"
+	HC03_MOE_VC16="Female; Margin of Error; Percent high school graduate or higher"
+	HC01_EST_VC17="Total; Estimate; Percent bachelor's degree or higher"
+	HC01_MOE_VC17="Total; Margin of Error; Percent bachelor's degree or higher"
+	HC02_EST_VC17="Male; Estimate; Percent bachelor's degree or higher"
+	HC02_MOE_VC17="Male; Margin of Error; Percent bachelor's degree or higher"
+	HC03_EST_VC17="Female; Estimate; Percent bachelor's degree or higher"
+	HC03_MOE_VC17="Female; Margin of Error; Percent bachelor's degree or higher"
+	HC01_EST_VC19="Total; Estimate; Population 25 to 34 years"
+	HC01_MOE_VC19="Total; Margin of Error; Population 25 to 34 years"
+	HC02_EST_VC19="Male; Estimate; Population 25 to 34 years"
+	HC02_MOE_VC19="Male; Margin of Error; Population 25 to 34 years"
+	HC03_EST_VC19="Female; Estimate; Population 25 to 34 years"
+	HC03_MOE_VC19="Female; Margin of Error; Population 25 to 34 years"
+	HC01_EST_VC20="Total; Estimate; High school graduate or higher"
+	HC01_MOE_VC20="Total; Margin of Error; High school graduate or higher"
+	HC02_EST_VC20="Male; Estimate; High school graduate or higher"
+	HC02_MOE_VC20="Male; Margin of Error; High school graduate or higher"
+	HC03_EST_VC20="Female; Estimate; High school graduate or higher"
+	HC03_MOE_VC20="Female; Margin of Error; High school graduate or higher"
+	HC01_EST_VC21="Total; Estimate; bachelor's degree or higher"
+	HC01_MOE_VC21="Total; Margin of Error; bachelor's degree or higher"
+	HC02_EST_VC21="Male; Estimate; bachelor's degree or higher"
+	HC02_MOE_VC21="Male; Margin of Error; bachelor's degree or higher"
+	HC03_EST_VC21="Female; Estimate; bachelor's degree or higher"
+	HC03_MOE_VC21="Female; Margin of Error; bachelor's degree or higher"
+	HC01_EST_VC23="Total; Estimate; Population 35 to 44 years"
+	HC01_MOE_VC23="Total; Margin of Error; Population 35 to 44 years"
+	HC02_EST_VC23="Male; Estimate; Population 35 to 44 years"
+	HC02_MOE_VC23="Male; Margin of Error; Population 35 to 44 years"
+	HC03_EST_VC23="Female; Estimate; Population 35 to 44 years"
+	HC03_MOE_VC23="Female; Margin of Error; Population 35 to 44 years"
+	HC01_EST_VC24="Total; Estimate; High school graduate or higher"
+	HC01_MOE_VC24="Total; Margin of Error; High school graduate or higher"
+	HC02_EST_VC24="Male; Estimate; High school graduate or higher"
+	HC02_MOE_VC24="Male; Margin of Error; High school graduate or higher"
+	HC03_EST_VC24="Female; Estimate; High school graduate or higher"
+	HC03_MOE_VC24="Female; Margin of Error; High school graduate or higher"
+	HC01_EST_VC25="Total; Estimate; bachelor's degree or higher"
+	HC01_MOE_VC25="Total; Margin of Error; bachelor's degree or higher"
+	HC02_EST_VC25="Male; Estimate; bachelor's degree or higher"
+	HC02_MOE_VC25="Male; Margin of Error; bachelor's degree or higher"
+	HC03_EST_VC25="Female; Estimate; bachelor's degree or higher"
+	HC03_MOE_VC25="Female; Margin of Error; bachelor's degree or higher"
+	HC01_EST_VC27="Total; Estimate; Population 45 to 64 years"
+	HC01_MOE_VC27="Total; Margin of Error; Population 45 to 64 years"
+	HC02_EST_VC27="Male; Estimate; Population 45 to 64 years"
+	HC02_MOE_VC27="Male; Margin of Error; Population 45 to 64 years"
+	HC03_EST_VC27="Female; Estimate; Population 45 to 64 years"
+	HC03_MOE_VC27="Female; Margin of Error; Population 45 to 64 years"
+	HC01_EST_VC28="Total; Estimate; High school graduate or higher"
+	HC01_MOE_VC28="Total; Margin of Error; High school graduate or higher"
+	HC02_EST_VC28="Male; Estimate; High school graduate or higher"
+	HC02_MOE_VC28="Male; Margin of Error; High school graduate or higher"
+	HC03_EST_VC28="Female; Estimate; High school graduate or higher"
+	HC03_MOE_VC28="Female; Margin of Error; High school graduate or higher"
+	HC01_EST_VC29="Total; Estimate; bachelor's degree or higher"
+	HC01_MOE_VC29="Total; Margin of Error; bachelor's degree or higher"
+	HC02_EST_VC29="Male; Estimate; bachelor's degree or higher"
+	HC02_MOE_VC29="Male; Margin of Error; bachelor's degree or higher"
+	HC03_EST_VC29="Female; Estimate; bachelor's degree or higher"
+	HC03_MOE_VC29="Female; Margin of Error; bachelor's degree or higher"
+	HC01_EST_VC31="Total; Estimate; Population 65 years and over"
+	HC01_MOE_VC31="Total; Margin of Error; Population 65 years and over"
+	HC02_EST_VC31="Male; Estimate; Population 65 years and over"
+	HC02_MOE_VC31="Male; Margin of Error; Population 65 years and over"
+	HC03_EST_VC31="Female; Estimate; Population 65 years and over"
+	HC03_MOE_VC31="Female; Margin of Error; Population 65 years and over"
+	HC01_EST_VC32="Total; Estimate; High school graduate or higher"
+	HC01_MOE_VC32="Total; Margin of Error; High school graduate or higher"
+	HC02_EST_VC32="Male; Estimate; High school graduate or higher"
+	HC02_MOE_VC32="Male; Margin of Error; High school graduate or higher"
+	HC03_EST_VC32="Female; Estimate; High school graduate or higher"
+	HC03_MOE_VC32="Female; Margin of Error; High school graduate or higher"
+	HC01_EST_VC33="Total; Estimate; bachelor's degree or higher"
+	HC01_MOE_VC33="Total; Margin of Error; bachelor's degree or higher"
+	HC02_EST_VC33="Male; Estimate; bachelor's degree or higher"
+	HC02_MOE_VC33="Male; Margin of Error; bachelor's degree or higher"
+	HC03_EST_VC33="Female; Estimate; bachelor's degree or higher"
+	HC03_MOE_VC33="Female; Margin of Error; bachelor's degree or higher"
+	HC01_EST_VC37="Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Less than high school graduate"
+	HC01_MOE_VC37="Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Less than high school graduate"
+	HC02_EST_VC37="Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Less than high school graduate"
+	HC02_MOE_VC37="Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Less than high school graduate"
+	HC03_EST_VC37="Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Less than high school graduate"
+	HC03_MOE_VC37="Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Less than high school graduate"
+	HC01_EST_VC38="Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - High school graduate (includes equivalency)"
+	HC01_MOE_VC38="Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - High school graduate (includes equivalency)"
+	HC02_EST_VC38="Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - High school graduate (includes equivalency)"
+	HC02_MOE_VC38="Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - High school graduate (includes equivalency)"
+	HC03_EST_VC38="Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - High school graduate (includes equivalency)"
+	HC03_MOE_VC38="Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - High school graduate (includes equivalency)"
+	HC01_EST_VC39="Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Some college or associate's degree"
+	HC01_MOE_VC39="Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Some college or associate's degree"
+	HC02_EST_VC39="Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Some college or associate's degree"
+	HC02_MOE_VC39="Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Some college or associate's degree"
+	HC03_EST_VC39="Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Some college or associate's degree"
+	HC03_MOE_VC39="Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - Some college or associate's degree"
+	HC01_EST_VC40="Total; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - bachelor's degree or higher"
+	HC01_MOE_VC40="Total; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - bachelor's degree or higher"
+	HC02_EST_VC40="Male; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - bachelor's degree or higher"
+	HC02_MOE_VC40="Male; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - bachelor's degree or higher"
+	HC03_EST_VC40="Female; Estimate; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - bachelor's degree or higher"
+	HC03_MOE_VC40="Female; Margin of Error; POVERTY RATE FOR THE POPULATION 25 YEARS AND OVER FOR WHOM POVERTY STATUS IS DETERMINED BY EDUCATIONAL ATTAINMENT LEVEL - bachelor's degree or higher"
+	HC01_EST_VC44="Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Population 25 years and over with earnings"
+	HC01_MOE_VC44="Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Population 25 years and over with earnings"
+	HC02_EST_VC44="Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Population 25 years and over with earnings"
+	HC02_MOE_VC44="Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Population 25 years and over with earnings"
+	HC03_EST_VC44="Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Population 25 years and over with earnings"
+	HC03_MOE_VC44="Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Population 25 years and over with earnings"
+	HC01_EST_VC45="Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Less than high school graduate"
+	HC01_MOE_VC45="Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Less than high school graduate"
+	HC02_EST_VC45="Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Less than high school graduate"
+	HC02_MOE_VC45="Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Less than high school graduate"
+	HC03_EST_VC45="Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Less than high school graduate"
+	HC03_MOE_VC45="Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Less than high school graduate"
+	HC01_EST_VC46="Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - High school graduate (includes equivalency)"
+	HC01_MOE_VC46="Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - High school graduate (includes equivalency)"
+	HC02_EST_VC46="Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - High school graduate (includes equivalency)"
+	HC02_MOE_VC46="Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - High school graduate (includes equivalency)"
+	HC03_EST_VC46="Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - High school graduate (includes equivalency)"
+	HC03_MOE_VC46="Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - High school graduate (includes equivalency)"
+	HC01_EST_VC47="Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Some college or associate's degree"
+	HC01_MOE_VC47="Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Some college or associate's degree"
+	HC02_EST_VC47="Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Some college or associate's degree"
+	HC02_MOE_VC47="Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Some college or associate's degree"
+	HC03_EST_VC47="Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Some college or associate's degree"
+	HC03_MOE_VC47="Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Some college or associate's degree"
+	HC01_EST_VC48="Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - bachelor's degree"
+	HC01_MOE_VC48="Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - bachelor's degree"
+	HC02_EST_VC48="Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - bachelor's degree"
+	HC02_MOE_VC48="Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - bachelor's degree"
+	HC03_EST_VC48="Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - bachelor's degree"
+	HC03_MOE_VC48="Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - bachelor's degree"
+	HC01_EST_VC49="Total; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Graduate or professional degree"
+	HC01_MOE_VC49="Total; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Graduate or professional degree"
+	HC02_EST_VC49="Male; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Graduate or professional degree"
+	HC02_MOE_VC49="Male; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Graduate or professional degree"
+	HC03_EST_VC49="Female; Estimate; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Graduate or professional degree"
+	HC03_MOE_VC49="Female; Margin of Error; MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2011 INFLATION-ADJUSTED DOLLARS) - Graduate or professional degree"
+	HC01_EST_VC52="Total; Estimate; PERCENT IMPUTED - Educational attainment"
+	HC01_MOE_VC52="Total; Margin of Error; PERCENT IMPUTED - Educational attainment"
+	HC02_EST_VC52="Male; Estimate; PERCENT IMPUTED - Educational attainment"
+	HC02_MOE_VC52="Male; Margin of Error; PERCENT IMPUTED - Educational attainment"
+	HC03_EST_VC52="Female; Estimate; PERCENT IMPUTED - Educational attainment"
+	HC03_MOE_VC52="Female; Margin of Error; PERCENT IMPUTED - Educational attainment"
+;
+run;
+
+proc printto print="&&cont&yr./acs_s1501_&yr._raw.txt" new;
+proc contents data=og&yr..acs_s1501_&yr._raw position; run;
+proc printto; run;
+%mend;

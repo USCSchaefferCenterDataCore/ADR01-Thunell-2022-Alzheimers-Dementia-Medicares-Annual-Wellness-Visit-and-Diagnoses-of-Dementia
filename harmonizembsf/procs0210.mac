@@ -1,0 +1,82 @@
+/* 
+	process all claim types in typlist for specified years.
+  Handles 2002-2010
+  Requires that nseg[typ][yyyy] macro variables be set up (include nseg.
+*/
+%macro procs0210(typlist,orgnames,stdnames,asisnames=,begy=2002,endy=2008,
+                 smp=20_,clms=_clms,revlin=,
+                 idvar=bene_id,claimvar=clm_id);
+
+   %* process each claim type in typlist  *;
+   
+   %let nt=1;
+   %let nxtyp=%scan(&typlist,&nt);
+   %do %while (%length(&nxtyp)>0);
+       
+       %if %substr(&nxtyp,1,2)=dm %then %let typlib=dme;
+       %else %let typlib=&nxtyp;
+       
+       %do y=&begy %to &endy;
+         %put nseg=&&&nseg&nxtyp&y;
+         %if &&&nseg&nxtyp&y > 0 %then %do n=1 %to &&&nseg&nxtyp&y;
+           %let fname=&nxtyp&smp&y&clms&n;
+           %extractfrom(&fname,&y,&nxtyp,
+                     inlist=&orgnames,outlist=&stdnames,asislist=&asisnames,
+                     inlib=&typlib,olib=work,ofn=&outfn.&y,
+                     idv=&idvar,claimid=&claimvar);
+           %if &n=1 %then %do;
+              data &outlib..&nxtyp._&outfn.&y.;
+                 set work.&nxtyp._&outfn.&y.;
+                 run;
+           %end;
+           %else %do;
+              proc append base=&outlib..&nxtyp._&outfn.&y 
+                          data=work.&nxtyp._&outfn.&y;
+           %end;
+
+         %end;
+         %else %do;
+           %let fname=&nxtyp&smp&y&clms;
+           %extractfrom(&fname,&y,&nxtyp,
+                     inlist=&orgnames,outlist=&stdnames,asislist=&asisnames,
+                     inlib=&typlib,olib=&outlib,ofn=&outfn.&y,
+                     idv=&idvar,claimid=&claimvar);
+         %end;
+         
+         %*** if id is EHIC then we need to apply the xwalk to get Bene_id ***;
+         %if %upcase(&idvar)=EHIC %then %do;
+             %xwyr(&nxtyp._&outfn,&y,&y,lib=&outlib,renfn=Y,contlist=N);
+         %end;
+         
+          proc sort data=&outlib..&nxtyp._&outfn.&y;
+             by bene_id claim_id;
+             run;
+          
+          /* now output sas contents listing, including freqs of key variables and
+             means on all variables */
+          %sascontents(&nxtyp._&outfn.&y,lib=&outlib,contdir=&contentsdir , domeans=N)
+          proc printto print="&contentsdir.&nxtyp._&outfn.&y..contents.txt";
+          run;
+          proc freq data=&outlib..&nxtyp._&outfn.&y;
+             table year fromfile claim_type 
+             %if %length(&stdnames)>0 %then &stdnames &asisnames;
+             %else &asisnames;
+               /missing list;
+             
+             %if %length(&stdnames)>0 %then %let yrfmt=&stdnames;
+             %else %let yrfmt=&asisnames;
+             %let yrcd=%index(%upcase(&yrfmt),%upcase(hcpcs_yr));
+             %if &yrcd>0 %then %let yrfmt=%substr(&yrfmt,1,%eval(&yrcd-1));
+             
+             format &yrfmt year4.;
+          proc means data=&outlib..&nxtyp._&outfn.&y;
+          run;
+          proc printto;
+          run;
+
+       %end;
+       
+       %let nt=%eval(&nt+1);
+       %let nxtyp=%scan(&typlist,&nt);
+   %end;
+%mend procs0210;
